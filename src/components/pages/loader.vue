@@ -14,34 +14,32 @@ export default {
 </script>
 
 <style>
-#loader {
-    background-color: white;
-    display: flex;
-    justify-content: center;
-    height: 105vh;
-    align-items: center;
-    z-index: 9990999;
-}
-.loader {
-  width: 120px;
-  height: 120px;
-  transform: rotate(90deg);
-  stroke-linecap: round;
-  stroke-width: 2.5;
-  fill: none;
-}
-.fade-out-click{
-    margin: 0 10% 10% 0;
-}
-  
+  #loader {
+      background-color: white;
+      display: flex;
+      justify-content: center;
+      height: 105vh;
+      align-items: center;
+      z-index: 9990999;
+  }
+  .loader {
+    width: 120px;
+    height: 120px;
+    transform: rotate(90deg);
+    stroke-linecap: round;
+    stroke-width: 2.5;
+    fill: none !important;
+  }
+  .fade-out-click{
+      margin: 0 10% 10% 0;
+  }
+    
   .internal-circle,
   .external-circle {
     stroke: #667db6;
     stroke-dashoffset: 0;
     transform-origin: center;
   }
-  
-  
   .internal-circle {
     stroke-dasharray: 187;
     animation: internal 3s ease-in-out infinite;
