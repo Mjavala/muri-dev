@@ -85,6 +85,7 @@ export default {
   },
   created () {
     this.device = this.$route.params.device
+    this.device =this.device.substr(this.device.indexOf(' ')+1); // "tocirah sneab"
     this.station = this.$route.params.station
   },
   mounted() {
@@ -114,6 +115,7 @@ export default {
         }`,
         variables: { xbeeId, stationId }
     }).then( (response) => {
+      console.log(response)
       this.data_payload = response.data.device_data
       })
     this.noDataRequested = false
