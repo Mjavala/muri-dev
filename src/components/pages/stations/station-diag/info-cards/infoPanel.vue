@@ -233,8 +233,8 @@ export default {
             this.track_status = statMessage.tracker.track['status']
             this.id = statMessage.tracker.track['id']
             const last_update = new Date(statMessage.tracker.track['last_update'] * 1000)
-            const month = last_update.getMonth()
-            const day = last_update.getDay()
+            const month = last_update.getMonth() + 1
+            const day = last_update.getDate()
             const hours = last_update.getHours()
             const minutes = last_update.getMinutes()
             const seconds = last_update.getSeconds()
@@ -261,13 +261,13 @@ export default {
             const allKeys = Object.keys(statMessage.receiver_1.all)
             const allValues = Object.keys(statMessage.receiver_1.all).map((k) => statMessage.receiver_1.all[k])
 
-            for(var i = 0; i < allKeys.length; i++){
-                const last_update = new Date(allValues[i].last_update * 1000)
-                const month = last_update.getMonth()
-                const day = last_update.getDay()
-                const hours = last_update.getHours()
-                const minutes = last_update.getMinutes()
-                const seconds = last_update.getSeconds()
+            for (var i = 0; i < allKeys.length; i++) {
+                let last_update = new Date(allValues[i].last_update * 1000)
+                let month = last_update.getMonth() + 1
+                let day = last_update.getDate()
+                let hours = last_update.getHours()
+                let minutes = last_update.getMinutes()
+                let seconds = last_update.getSeconds()
 
                 if (this.radios[i] === undefined) {
 

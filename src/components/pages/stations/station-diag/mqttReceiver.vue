@@ -243,14 +243,14 @@ export default {
     font-weight: bolder;
     position: absolute;
     top: -2%;
-    left: 17.75%;
+    left: 19.75%;
   }
   .top-data-last-range {
     font-size: 1.5em;
     font-weight: bolder;
     position: absolute;
     top: -2%;
-    left: 26%;
+    left: 28%;
   }
   @keyframes shadow-pulse
   {

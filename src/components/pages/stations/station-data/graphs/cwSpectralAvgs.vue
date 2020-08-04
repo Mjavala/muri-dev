@@ -102,7 +102,6 @@ export default {
     methods: {
       addData (cw, traceIndex) {
         // only restyle if the data is different
-        const t0 = new Date()
         const update = {
           y: cw,
         }
@@ -113,8 +112,6 @@ export default {
             traces: [traceIndex]
           }, {
           })
-        const t1 = new Date()
-        console.log('took ' + (t1-t0) + 'miliseconds')
       },
       findTrace (deviceList) {
         for (const [i, id] of deviceList.entries()){

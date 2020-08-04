@@ -1,7 +1,10 @@
 <template>
   <div>
     <altitudeGraph :idList="idList" :filteredAltitude="filteredAltitude" />
-    <rssiGraph :idList="idList" :filteredRSSI="filteredRSSI" />
+    <rssiGraph  
+      :filteredRSSI="filteredRSSI"
+      :filteredRSSIStat="filteredRSSIStat"
+    />
     <tempGraph :idList="idList" :filteredTemp="filteredTemp" />
     <battMon 
       :filteredBatteryMonitor="filteredBatteryMonitor"
@@ -24,7 +27,7 @@ import cwAvgs from './graphs/cwSpectralAvgs'
 
 export default {
 
-  props: ['id', 'message', 'payloadStat'],
+  props: ['id', 'message', 'payloadStat', 'balloonToTrack3'],
   components: {
     altitudeGraph,
     rssiGraph,
@@ -40,18 +43,28 @@ export default {
     },
     id(newVal){
       this.idList = newVal
+    },
+    payloadStat (newVal) {
+      this.messageStat = newVal
+      this.filterStatMessage(this.messageStat)
+    },
+    balloonToTrack3 (newVal) {
+      this.balloonToTrack = newVal
     }
   },
   data() {
     return {
         payload: [],
+        messageStat: [],
         messageOBJ: [],
+        balloonToTrack: '',
         idList: [],
         filteredAltitude: {},
         filteredRSSI: {},
         filteredTemp: {},
         filteredBatteryMonitor: {},
         filteredVentBattery: {},
+        filteredRSSIStat: {},
         filteredHwAvgs: {},
         filteredCwAvgs: {},
         altitude: {},
@@ -63,6 +76,10 @@ export default {
     filterMessage(message){
       this.messageOBJ = JSON.parse(message)
       this.assignDataObjects(this.messageOBJ)
+    },
+    filterStatMessage(message){
+      this.messageOBJ = JSON.parse(message)
+      this.assignDataObjectsStat(this.messageOBJ)
     },
     assignDataObjects(message){
         const id = message.data['ADDR_FROM']
@@ -112,6 +129,12 @@ export default {
           this.filteredHwAvgs = {
               [id] : [hw0, hw1, hw2, hw3, hw4, hw5, hw6, hw7, hw8]
             }
+          }
+        },
+        assignDataObjectsStat (message) {
+          const id = message['station']
+          this.filteredRSSIStat = {
+              [id] : message.receiver_1.last.rssi_last['rssi']
           }
         }
     }

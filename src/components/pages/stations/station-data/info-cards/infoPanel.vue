@@ -266,7 +266,6 @@ export default {
                     this.ta1 = (messageOBJ.data.frame_data['Ta1_C']).toFixed(3) + ' °C'
                     this.ta2 = (messageOBJ.data.frame_data['Ta2_C']).toFixed(3) + ' °C'
                 }
-                // 0xc109 only
                 // if (messageOBJ.data['FRAME_TYPE'] === '0xc109') {}
             }
         },
@@ -297,12 +296,11 @@ export default {
             allKeys.forEach((key, i) => {
                 if (key === this.current_balloon) {
                     const last_update = new Date(allValues[i].last_update * 1000)
-                    const month = last_update.getMonth()
-                    const day = last_update.getDay()
+                    const month = last_update.getMonth() + 1
+                    const day = last_update.getDate()
                     const hours = last_update.getHours()
                     const minutes = last_update.getMinutes()
                     const seconds = last_update.getSeconds()
-                    
                     this.last_update = `${month}:${day}: ${hours}:${minutes}:${seconds}`
                     this.par_bytes = allValues[i].par_bytes
                     this.unpar_bytes = allValues[i].unpar_bytes

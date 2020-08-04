@@ -6,24 +6,34 @@
     <l-tile-layer 
       v-bind="mapRender"
     />
+    <l-feature-group ref="features">
       <l-polyline
-        :lat-lngs="markers"
-        :opacity="1"
-        :weight="4"
+          :lat-lngs="markers"
+          :opacity="1"
+          :weight="4"
       />
-    <l-marker :lat-lng="startMarker">
-        <l-icon v-bind="iconConfigBalloon" />
-    </l-marker>
-    <l-marker :lat-lng="endMarker">
-        <l-icon v-bind="iconConfigFinish" />
-    </l-marker>
+      <l-marker :lat-lng="startMarker">
+          <l-icon v-bind="iconConfigBalloon" />
+      </l-marker>
+      <l-marker :lat-lng="endMarker">
+          <l-icon v-bind="iconConfigFinish" />
+      </l-marker>
+      <l-marker :lat-lng="apogeeMarker">
+          <l-icon v-bind="iconConfigFinish" />
+        <l-popup> 
+          <div class="popups">
+            apogee (m): {{this.apogee}}
+          </div> 
+        </l-popup>
+      </l-marker>
+    </l-feature-group>
     </l-map>
   </div>
 </template>
 
 <script>
 //TODO: Test render of markers / popups / prop data
-import {LMap, LTileLayer, LPolyline, LMarker, LIcon } from 'vue2-leaflet'
+import {LMap, LTileLayer, LPolyline, LPopup, LFeatureGroup, LMarker, LIcon } from 'vue2-leaflet'
 import L from 'leaflet';
 import Balloon from '../../../assets/pin.png'
 import Finish from '../../../assets/race-flag.png'
@@ -33,21 +43,35 @@ export default {
   components: { 
     LMap, 
     LTileLayer,
+    LFeatureGroup,
     LPolyline,
     LMarker,
-    LIcon
-    },
+    LIcon,
+    LPopup
+  },
   props: [
-    'mapArray'
+    'mapArray', 'apogeeLatLong'
   ],
   watch: {
-    mapArray(newVal){
+    mapArray (newVal) {
         this.markers = newVal
-        this.mapConfig.center = L.latLng(newVal[newVal.length - 1][0], newVal[newVal.length - 1][1])
+        //this.mapConfig.center = L.latLng(newVal[newVal.length - 1][0], newVal[newVal.length - 1][1])
         this.startMarker = L.latLng(newVal[0][0], newVal[0][1])
         this.endMarker = L.latLng(newVal[newVal.length - 1][0], newVal[newVal.length - 1][1])
-        
+        //let midpoint = this.markers[Math.round((this.markers.length -1) / 2)]
+        /*if (this.markers.length < 600) {
+          this.mapConfig.zoom = 10
+        }*/
         this.$emit('ready', true)
+        //const startBound = [newVal[0][0], newVal[0][1]]
+        //const endBound = [newVal[newVal.length - 1][0], newVal[newVal.length - 1][1]]
+        //this.$refs.features.mapObject.fitBounds(startBound, endBound);
+    },
+    apogeeLatLong (newVal) {
+      console.log(newVal)
+      this.apogeeMarker = L.latLng(newVal.lat, newVal.lon)
+      console.log(newVal.max)
+      this.apogee = newVal.max
     }
   },
   data() {
@@ -55,9 +79,11 @@ export default {
       markers: [],
       startMarker: L.latLng(40, -105),
       endMarker: L.latLng(40, -105),
+      apogee: 0,
+      apogeeMarker: L.latLng(40, -105),
       count: 0,
       mapConfig: {
-        zoom: 11,
+        zoom: 8,
         minZoom: 2,
         center: L.latLng(40, -105),
         Bounds: [

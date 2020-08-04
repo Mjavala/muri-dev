@@ -56,7 +56,7 @@ export default {
           },
           yaxis: {
             title: {
-              text: 'RSSI',
+              text: 'Filtered RSSI',
               standoff: 20
             },
             zeroline: false,

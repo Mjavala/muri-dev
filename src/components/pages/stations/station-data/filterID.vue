@@ -10,6 +10,7 @@
         :id='deviceList' 
         :message='payload' 
         :payloadStat='payloadStat'
+        :balloonToTrack3="balloonToTrack3"
       />
   </div>
 

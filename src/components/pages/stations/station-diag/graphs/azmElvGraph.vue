@@ -191,7 +191,7 @@ export default {
   #azm-elv-graph{
     display: inline;
     position: absolute;
-    top: 35.5%;
+    top: 34.5%;
     left: 51%;
     width: 45%;
     height: 35%;

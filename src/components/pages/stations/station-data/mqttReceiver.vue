@@ -148,16 +148,13 @@ export default {
 </script>
 
 <style scoped>
-  #app {
+  #wrapper {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
     margin-top: 20px;
-    position: relative;
-  }
-  #wrapper{
     position: relative;
     height: 105%;
     margin: 2em 0;
@@ -181,21 +178,21 @@ export default {
     z-index: 11;
   }
   .top-data {
-    font-size: 1.5em;
+    font-size: 1.35em;
     font-weight: bolder;
     position: absolute;
     top: -3%;
     left: 0.5%;
   }
   .top-data-rssi {
-    font-size: 1.5em;
+    font-size: 1.35em;
     font-weight: bolder;
     position: absolute;
     top: -3%;
     left: 16.5%;
   }
   .top-data-last-range {
-    font-size: 1.5em;
+    font-size: 1.35em;
     font-weight: bolder;
     position: absolute;
     top: -3%;

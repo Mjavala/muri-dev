@@ -1,5 +1,5 @@
 <template>
-  <div id="altitude-graph">
+  <div id="altitude-graph-hist">
   </div>
 </template>
 
@@ -17,12 +17,6 @@ export default {
     },
     data() {
     return {
-      altitude: Number,
-      currentDevice: '',
-      throttleCount: 0,
-      timer: Number,
-      counter: 0,
-      count: 0,
       chart: {
         uuid: "123",
         traces: [],
@@ -42,11 +36,11 @@ export default {
           },
           showlegend: false,
           xaxis: {
-            tickmode: 'auto',
+            //tickmode: 'auto',
             gridcolor: '#bdbdbd',
-            rangemode: 'tozero',
-            showline:  true,
-            zeroline: false,
+            //rangemode: 'tozero',
+            //showline:  true,
+            //zeroline: false,
             titlefont: {
               size: 10
             },
@@ -87,7 +81,7 @@ export default {
         this.chart.traces.push(traceObj)
         let config = {displayModeBar: false, responsive: true}
         Plotly.react(
-            'altitude-graph',
+            'altitude-graph-hist',
             this.chart.traces,
             this.chart.layout,
             config
@@ -99,7 +93,7 @@ export default {
 </script>
 
 <style scoped>
-  #altitude-graph{
+  #altitude-graph-hist{
       padding: 2em;
       margin-top: 1em;
       margin-right: 3.5em;

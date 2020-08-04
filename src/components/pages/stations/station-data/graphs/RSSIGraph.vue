@@ -7,8 +7,8 @@
 import Plotly from 'plotly.js-dist/plotly'
 
 export default {
-    props: [
-      'idList', 'filteredRSSI'
+    props: [ 
+      'filteredRSSI', 'filteredRSSIStat'
     ],
     mounted () {
       let config = {displayModeBar: false, responsive: true}
@@ -20,50 +20,57 @@ export default {
       )
     },
     watch: {
-      filteredRSSI(newVal){
+      filteredRSSI (newVal) {
+        if (this.statMessageCount === 0) {
+          this.statMessageCount = this.statMessageCount + 1
+        }
         let objKey = Object.keys(newVal)
         this.currentDevice = objKey[0]
         let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
-        this.rssi = objKeyMap[0]
+        this.az = objKeyMap[0]
+        if (this.counter === 0 && this.statMessageCount === 1) {
+          this.timer = new Date()
+          this.addTrace(this.az, 'RSSI')
+          this.counter = this.counter + 1
+        } else {
+          this.addData(this.az)
+        }
       },
-      idList(newVal, oldVal){
-        if (newVal.length === oldVal.length){
-          // current device message
-          this.findTrace(newVal)
+      filteredRSSIStat(newVal){
+        if (this.statMessageCount1 === 0) {
+          this.statMessageCount1 = this.statMessageCount1 + 1
         }
-        if (newVal.length > oldVal.length && newVal.length > 1){
-          // new device detected, add trace
-          this.addTrace(this.rssi)
-          this.findTrace(newVal)
-        }
-        if (newVal.length < 1){
-          // first device
-          this.chart.traces[0].name = this.currentDevice
-        }
-        if (newVal.length === 1){
-          // first device
-          if (this.counter === 0) {
-            this.timer = new Date()
-            this.addTrace()
-            this.counter = this.counter + 1
-          }
+        let objKey = Object.keys(newVal)
+        this.currentDevice1 = objKey[0]
+        let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
+        this.elv = objKeyMap[0]
+        if (this.counter1 === 0 && this.statMessageCount1 === 1) {
+          this.addTrace(this.elv, 'Filtered RSSI')
+          this.counter1 = this.counter1 + 1
+        } else if (this.chart.traces.length > 1){
+          this.addDataElv(this.elv)
         }
       }
     },
     data() {
     return {
-      rssi: Number,
+      az: Number,
+      elv: Number,
       currentDevice: '',
+      currentDevice1: '',
       timer: Number,
-      count: 0,
       counter: 0,
+      counter1: 0,
+      statMessageCount: 0,
+      statMessageCount1: 0,
+      filteredRSSIHook: false,
       chart: {
         uuid: "1233",
         traces: [],
         layout: {
           plot_bgcolor: '#F5F5F5',
           title: {
-            text: 'RSSI vs Time',
+            text: 'RSSI Graph',
             font: {
               size: 11
             }
@@ -90,10 +97,7 @@ export default {
             zeroline: false,
             showline:  true,
             rangemode: 'tozero',
-            title: {
-              text: 'RSSI',
-              standoff: 20
-            },
+            title: 'RSSI',
             titlefont: {
               size: 9
             },
@@ -102,55 +106,87 @@ export default {
             },
             gridwidth: 1,
             gridcolor: '#bdbdbd',
+          },
+          yaxis2: {
+            automargin: true,
+            title: {
+              text: "RSSI Filtered",
+              standoff: 0
+            },
+            titlefont: {
+              color: "#512DA8",
+              size: 9
+            },
+            tickfont: {
+              color: "#512DA8",
+              size: 8
+            },
+            overlaying: "y",
+            side: "right"
           }
         }
       }
     }
     },
     methods: {
-      addData (rssi, traceIndex) {
-        /*let last = this.chart.traces[traceIndex].y[this.chart.traces[traceIndex].y.length - 1]
-        if (last === rssi){
-          this.count = this.count + 1
-        }
-        if (last !== rssi || this.count === 10) { 
-          this.count = 1
-        }*/
+      addData (point) {
         const update = {
           x: [[new Date()]],
-          y: [[rssi]]
+          y: [[point]]
         }
         Plotly.extendTraces(
           'rssi-graph',
           update, 
-          [traceIndex],
+          [0],  // only 1 station
         )
         const newTime = new Date()
         const delta =  (newTime - this.timer) / 1000
         if (delta >= 1800) {
           // 30 minute timeframe reached, need to remove first element of array as new one gets added
-          this.chart.traces[traceIndex].y.shift()
-          this.chart.traces[traceIndex].x.shift()
+          this.chart.traces[0].y.shift()
+          this.chart.traces[0].x.shift()
+          this.filteredRSSIHook = true
         }
       },
-      findTrace (deviceList) {
-        for (const [i, id] of deviceList.entries()){
-          if (id === this.currentDevice){
-            this.addData(this.rssi, i)
+      addDataElv (point) {
+        const update = {
+          x: [[new Date()]],
+          y: [[point]]
+        }
+        Plotly.extendTraces(
+          'rssi-graph',
+          update, 
+          [1],
+        )
+        if (this.filteredRSSIHook) {
+          this.chart.traces[1].y.shift()
+          this.chart.traces[1].x.shift()
+        }
+      },
+      addTrace (point, name) {
+        if (this.chart.traces.length === 1) {
+            const traceObj = {
+              y: [point],
+              x: [new Date()],
+              type: 'scattergl',
+              mode: 'lines',
+              connectgaps: true,
+              name: name,
+              yaxis: "y2"
           }
+          this.chart.traces.push(traceObj)
+        } else {
+          const traceObj = {
+              y: [point],
+              x: [new Date()],
+              type: 'scattergl',
+              mode: 'lines',
+              connectgaps: true,
+              name: name
+          }
+          this.chart.traces.push(traceObj)
         }
-      },
-      addTrace (rssi) {
-        const traceObj = {
-            y: [rssi],
-            x: [new Date()],
-            type: 'scattergl',
-            mode: 'lines',
-            connectgaps: true,
-            name: this.currentDevice
-        }
-        this.chart.traces.push(traceObj)
-      },
+      }
     }
   }
 </script>

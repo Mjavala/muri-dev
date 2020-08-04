@@ -1,5 +1,5 @@
 <template>
-  <div id="volt-graph">
+  <div id="bytes-graph">
   </div>
 </template>
 
@@ -9,46 +9,43 @@ import Plotly from 'plotly.js-dist/plotly'
 export default {
   // voltage --> azm need to rename
     props: [ 
-      'filteredAzimuthVoltage', 'filteredElVoltage'
+      'filteredAvgByteSec'
     ],
     mounted () {
       let config = {displayModeBar: false, responsive: true}
       Plotly.react(
-        'volt-graph',
+        'bytes-graph',
         this.chart.traces,
         this.chart.layout,
         config
       )
     },
     watch: {
-      filteredAzimuthVoltage(newVal){
+      filteredAvgByteSec(newVal){
         if (this.statMessageCount === 0) {
           this.statMessageCount = this.statMessageCount + 1
         }
         let objKey = Object.keys(newVal)
         this.currentDevice = objKey[0]
         let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
-        this.az = objKeyMap[0]
+        this.bytes = objKeyMap[0]
         if (this.counter === 0 && this.statMessageCount === 1) {
           this.timer = new Date()
-          this.addTrace(this.az, 'az_volt')
+          this.addTrace(this.bytes, 'bytes')
           this.counter = this.counter + 1
         } else {
-          this.addData(this.az)
+          this.addData(this.bytes)
         }
       }
     },
     data() {
     return {
-      az: Number,
-      elv: Number,
+      bytes: Number,
       currentDevice: '',
-      currentDevice1: '',
       timer: Number,
       counter: 0,
-      counter1: 0,
+      filteredRSSIHook: false,
       statMessageCount: 0,
-      statMessageCount1: 0,
       chart: {
         uuid: "12323",
         traces: [],
@@ -105,64 +102,38 @@ export default {
           y: [[point]]
         }
         Plotly.extendTraces(
-          'volt-graph',
+          'bytes-graph',
           update, 
-          [0],  // only 1 station
+          [0]
         )
         const newTime = new Date()
         const delta =  (newTime - this.timer) / 1000
         if (delta >= 1800) {
-          // 30 minute timeframe reached, need to remove first element of array as new one gets added
+          // 30 minute timeframe reached
           this.chart.traces[0].y.shift()
           this.chart.traces[0].x.shift()
-          this.chart.traces[1].y.shift()
-          this.chart.traces[1].x.shift()
         }
-      },
-      addDataElv (point) {
-        const update = {
-          x: [[new Date()]],
-          y: [[point]]
-        }
-        Plotly.extendTraces(
-          'volt-graph',
-          update, 
-          [1],  // repeating yourself cuz you suuuuuuuuck ~ deadlineisbelikedeadlinedo ~
-        )
       },
       addTrace (point, name) {
-        if (this.chart.traces.length === 1) {
-          const traceObj = {
-              y: [point],
-              x: [new Date()],
-              type: 'scattergl',
-              mode: 'lines',
-              connectgaps: true,
-              name: name,
-              yaxis: "y2"
-          }
-          this.chart.traces.push(traceObj)
-        } else {
-          const traceObj = {
-              y: [point],
-              x: [new Date()],
-              type: 'scattergl',
-              mode: 'lines',
-              connectgaps: true,
-              name: name
-          }
-          this.chart.traces.push(traceObj)
+        const traceObj = {
+          y: [point],
+          x: [new Date()],
+          type: 'scattergl',
+          mode: 'lines',
+          connectgaps: true,
+          name: name,
         }
+        this.chart.traces.push(traceObj)
       },
     }
   }
 </script>
 
 <style scoped>
-  #volt-graph{
+  #bytes-graph{
     display: inline;
     position: absolute;
-    top: 70.5%;
+    top: 69.5%;
     left: 51%;
     width: 45%;
     height: 35%;

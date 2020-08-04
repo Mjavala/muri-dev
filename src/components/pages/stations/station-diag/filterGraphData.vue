@@ -1,7 +1,10 @@
 <template>
   <div>
-    <rssiGraph :idList="idList" :filteredRSSI="filteredRSSI" />
-    <voltageGraph  :filteredAzimuthVoltage="filteredAzimuthVoltage"/>
+    <rssiGraph 
+      :filteredRSSI="filteredRSSI"
+      :filteredRSSIStat="filteredRSSIStat"
+    />
+    <bytesPerSec  :filteredAvgByteSec="filteredAvgByteSec"/>
     <azmElv :filteredAzimuth="filteredAzimuth" :filteredElevation="filteredElevation" />
 
   </div>
@@ -19,14 +22,14 @@
 */
 import rssiGraph from './graphs/rssiGraph'
 import azmElv from './graphs/azmElvGraph'
-import voltageGraph from './graphs/voltageGraph'
+import bytesPerSec from './graphs/bytesPerSec'
 
 export default {
 
   props: ['id', 'message', 'payloadStat'],
   components: {
     rssiGraph,
-    voltageGraph,
+    bytesPerSec,
     azmElv
   },
   watch: {
@@ -48,11 +51,12 @@ export default {
         payloadStats: [],
         messageOBJ: [],
         idList: [],
-        filteredAzimuthVoltage: {},
+        filteredAvgByteSec: {},
         filteredElVoltage: {},
         filteredAzimuth: {},
         filteredElevation: {},
         filteredRSSI: {},
+        filteredRSSIStat: {},
         rssi: Number,
         time: new Date()
     }
@@ -76,7 +80,7 @@ export default {
     assignDataObjectsStation (message) {
       const id = message['station']
 
-      this.filteredAzimuthVoltage = {
+      this.filteredAvgByteSec = {
         [id]: (message.receiver_1.last['avg_byte_sec']).toFixed(3)
       }
       this.filteredElVoltage = {
@@ -87,6 +91,9 @@ export default {
       }
       this.filteredElevation = {
         [id]: message.tracker.ant['elv']
+      }
+      this.filteredRSSIStat = {
+          [id] : message.receiver_1.last.rssi_last['rssi']
       }
     }
   }

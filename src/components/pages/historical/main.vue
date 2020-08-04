@@ -5,30 +5,31 @@
   <v-icon class="reload" @click="reloadPage" v-if="showSubmitButton">
     mdi-refresh
   </v-icon>
-  <div class="data-wrapper" v-if="noDataRequested">
+  <div class="data-wrapper">
     <div id="form-wrap">
       <div class="form-item" v-show="!show">
         <v-select
-            :items="deviceList"
+            :items="selectDeviceList"
             label="Available xbees"
             filled
             v-model="device"
-            v-on:input="showSubmitButton = true"
+            v-on:input="deviceSelected = true"
+            min-width=300
+        ></v-select>
+        <v-select
+            :items="stationList"
+            label="Available stations"
+            filled
+            v-model="station"
+            v-on:input="stationSelected = true"
         ></v-select>
       </div>
       <div class="form-item" v-if="showSubmitButton">
-        <v-btn @click="getDeviceData(device)">
+        <v-btn @click="getDeviceData(device, station)">
           Get Flight Data
         </v-btn>
       </div>
     </div>
-  </div>
-  <div id="viz-wrap">
-    <mapRender @ready="showData" :mapArray="mapArray" />
-    <altitudeGraph :altitudeGraphObject="altitudeGraphObject"/>
-    <tempGraph :tempGraphObject="tempGraphObject" />
-    <rssiGraph :rssiGraphObject="rssiGraphObject" />
-    <battGraph :battGraphObject="battGraphObject" />
   </div>
 </v-app>
 </template>
@@ -37,21 +38,11 @@
 import Loader from '../loader'
 import navBar from './navbarHistorical'
 import gql from 'graphql-tag';
-import altitudeGraph from './graphs/altitudeGraph'
-import tempGraph from './graphs/tempGraph'
-import rssiGraph from './graphs/rssiGraph'
-import battGraph from './graphs/battMonGraph'
-import mapRender from './mapRender'
 
 export default {
   components: {
     Loader,
     navBar,
-    altitudeGraph,
-    tempGraph,
-    rssiGraph,
-    battGraph,
-    mapRender
   },
   watch: {
     DEVICES (newVal) {
@@ -60,46 +51,58 @@ export default {
         this.availableDevices(this.deviceListResponse)
       }
     },
-    device () {
-      this.showSubmitButton = true
-    },
-    data_payload () {
-      for (var i = 0, len = this.data_payload.length; i < len; i++) {
-        this.timeArray.push(this.data_payload[i].data_time)
-        this.batteryMonitorArray.push(this.data_payload[i].batt_mon)
-        this.ventBattArray.push(this.data_payload[i].vent_batt)
-        this.mapArray.push([this.data_payload[i].latitude, this.data_payload[i].longitude])
-        this.altitudeArray.push(this.data_payload[i].altitude)
-        this.temperatureArray.push(this.data_payload[i].temperature)
-        this.rssiArray.push(this.data_payload[i].rssi)
+    STATIONS (newVal) {
+      if (newVal.length > 0) {
+        this.stationListResponse = newVal
+        this.availabeStations(this.stationListResponse)
       }
-      this.packageDataForGraphs()
-    }
+    },
+    stationSelected (newVal) {
+      if (newVal === true && this.deviceSelected === true) {
+        this.showSubmitButton = true
+      }
+    },
+    deviceSelected (newVal) {
+      if (newVal === true && this.stationSelected === true) {
+        this.showSubmitButton = true
+      }
+    },
+    data_payload (newVal, oldVal) {
+      if (newVal.length == oldVal.length) {
+        // done with for loop
+        let objValues = Object.keys(newVal).map((k) => newVal[k]);
 
+        objValues.forEach( (element) => {
+          if (!(element === undefined)) {
+            let date = element.data_time.split(' ')[0];
+            this.flight_dates.push(date)
+          }
+        })
+      }
+    },
+    flight_dates (newVal) {
+      newVal.forEach((element, i) => {
+        this.selectDeviceList.push(element + ' ' + this.deviceList[i])
+      })
+    }
   },
   data () {
     return {
       show: true,
+      deviceSelected: false,
+      stationSelected: false,
+      selectDeviceList: [],
       DEVICES: [],
+      STATIONS: [],
       timeArray: [],
-      batteryMonitorArray: [],
-      ventBattArray: [],
-      longitudeArray: [],
-      lattitudeArray: [],
-      altitudeArray: [],
-      mapArray: [],
-      temperatureArray: [],
-      rssiArray: [],
-      altitudeGraphObject: {},
-      rssiGraphObject: {},
-      tempGraphObject: {},
-      battGraphObject: {},
-      device: '',
-      deviceList: [],
-      deviceListResponse: [],
       data_payload: [],
+      device: '',
+      station: '',
+      deviceList: [],
+      stationList: [],
+      deviceListResponse: [],
       showSubmitButton: false,
-      noDataRequested: true
+      flight_dates: []
     }
   },
   mounted() {
@@ -114,53 +117,52 @@ export default {
     availableDevices (response) {
       response.forEach(element => {
         this.deviceList.push(element.addr)
-      });
-    },
-    getDeviceData (xbeeId) {
-      this.show = true
-      this.$apollo.query({
-        query: gql` query data_payload($xbeeId: String!){
-          device_data(where: {device_id: {_eq: $xbeeId}}) {
-            batt_mon
-            temperature
-            vent_batt
-            altitude
-            data_time
-            longitude
-            latitude
-            rssi
-          }
-        }`,
-        variables: { xbeeId }
-    }).then( (response) => {
-      this.data_payload = response.data.device_data
+        this.dateQuery(element.addr)
       })
-    this.noDataRequested = false
     },
-    packageDataForGraphs () {
-      this.altitudeGraphObject = {
-        y: this.altitudeArray,
-        x: this.timeArray
-      }
-      this.rssiGraphObject = {
-        y: this.rssiArray,
-        x: this.timeArray
-      }
-      this.tempGraphObject = {
-        y: this.temperatureArray,
-        x: this.timeArray
-      },
-      this.battGraphObject = {
-        y: this.batteryMonitorArray,
-        y2: this.ventBattArray,
-        x: this.timeArray
-      }
+    availabeStations (response) {
+      response.forEach(element => {
+        this.stationList.push(element.stat_addr)
+      })
+    },
+    getDeviceData () { 
+      this.$router.push({
+          name: "historical",
+          params: { device: this.device, station: this.station}
+        });
     },
     reloadPage(){
       window.location.reload()
     },
     showData(){
       this.show = false
+    },
+    returnIndexOfMax (arr) {
+      if (arr.length === 0) {
+          return -1
+      }
+      var max = arr[0]
+      var maxIndex = 0
+
+      for (var i = 1; i < arr.length; i++) {
+        if (arr[i] > max) {
+          maxIndex = i
+          max = arr[i]
+        }
+      }
+      return max, maxIndex
+    },
+    dateQuery (xbeeId) {
+      this.$apollo.query({
+        query: gql` query data_payload($xbeeId: String!){
+          device_data(limit: 1, where: {device_id: {_eq: $xbeeId}}) {
+            data_time
+          }
+        }`,
+        variables: { xbeeId }
+        }).then( (response) => {
+        this.data_payload.push(response.data.device_data[0])
+      })
     }
   },
   apollo: {
@@ -171,13 +173,20 @@ export default {
             addr
           }
         }`
+      },
+      STATIONS: {
+        query: gql`{
+          STATIONS {
+            stat_addr
+          }
+        }`
       }
     }
   }
 
 </script>
 
-<style scoped>
+<style>
   .data-wrapper {
     width: 100vw;
     height: 100vh;
@@ -202,5 +211,11 @@ export default {
     position: absolute;
     top: 3em;
     right: 3em;
+  }
+  .v-list-item__title {
+    font-size: 0.9em !important;
+  }
+  .v-menu__content {
+    min-width: 300px !important;
   }
 </style>
