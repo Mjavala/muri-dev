@@ -259,7 +259,7 @@ export default {
                 this.ns = messageOBJ.data.frame_data['gps_numsats']
                 this.packet_num = messageOBJ.data.frame_data['packet_num']
                 this.epoch_index = messageOBJ.data.frame_data['epoch index']
-                this.interval_index = messageOBJ.data.frame_data['interval_index']
+                this.interval_index = messageOBJ.data.frame_data['interval index']
                 this.packet_num = messageOBJ.data.frame_data['packet_num']
                 this.rssi = messageOBJ.data['RSSI_RX']
                 // 0xd2a8 only
