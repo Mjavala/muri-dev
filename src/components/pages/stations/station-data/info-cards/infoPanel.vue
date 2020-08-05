@@ -142,6 +142,10 @@
                     <th>Epoch Index:</th>
                     <td>{{this.epoch_index}} </td>
                 </tr>
+                <tr>
+                    <th>Interval Index:</th>
+                    <td>{{this.interval_index}} </td>
+                </tr>
             </table>
         </div>
         <div  class="comms-stats" >
@@ -234,7 +238,8 @@ export default {
             current_balloon: '',
             rssi_filtered: -999,
             secs_ago: -999,
-            tracker_status: 'None'
+            tracker_status: 'None',
+            interval_index: -999
         }
     },
     props: ['balloonToTrack', 'balloonInfoMessage', 'stationTrackingInfoMessage'],
@@ -254,6 +259,7 @@ export default {
                 this.ns = messageOBJ.data.frame_data['gps_numsats']
                 this.packet_num = messageOBJ.data.frame_data['packet_num']
                 this.epoch_index = messageOBJ.data.frame_data['epoch index']
+                this.interval_index = messageOBJ.data.frame_data['interval_index']
                 this.packet_num = messageOBJ.data.frame_data['packet_num']
                 this.rssi = messageOBJ.data['RSSI_RX']
                 // 0xd2a8 only
