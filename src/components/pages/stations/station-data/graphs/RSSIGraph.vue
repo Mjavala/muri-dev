@@ -106,23 +106,6 @@ export default {
             },
             gridwidth: 1,
             gridcolor: '#bdbdbd',
-          },
-          yaxis2: {
-            automargin: true,
-            title: {
-              text: "RSSI Filtered",
-              standoff: 0
-            },
-            titlefont: {
-              color: "#512DA8",
-              size: 9
-            },
-            tickfont: {
-              color: "#512DA8",
-              size: 8
-            },
-            overlaying: "y",
-            side: "right"
           }
         }
       }
@@ -172,7 +155,6 @@ export default {
               mode: 'lines',
               connectgaps: true,
               name: name,
-              yaxis: "y2"
           }
           this.chart.traces.push(traceObj)
         } else {

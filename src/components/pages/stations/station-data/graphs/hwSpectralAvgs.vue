@@ -99,15 +99,13 @@ export default {
       addData (hw, traceIndex) {
         // only restyle if the data is different
         const update = {
-          y: hw,
+          y: [hw],
         }
-        Plotly.animate(
-          'hw-graph', {
-            data: [update],
-            layout: this.chart.layout,
-            traces: [traceIndex]
-          }, {
-          })
+        Plotly.restyle(
+          'hw-graph',
+          update,
+          [traceIndex]
+        )
       },
       findTrace (deviceList) {
         for (const [i, id] of deviceList.entries()){
@@ -118,7 +116,7 @@ export default {
       },
       addTrace (hw) {
         const traceObj = {
-            y: hw,
+            y: [hw],
             x: ['hw0', 'hw1', 'hw2', 'hw3', 'hw4', 'hw5', 'hw6', 'hw7', 'hw8'],
             type: 'bar',
             name: this.currentDevice

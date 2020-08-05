@@ -109,10 +109,6 @@ export default {
           },
           yaxis2: {
             automargin: true,
-            title: {
-              text: "RSSI Filtered",
-              standoff: 0
-            },
             titlefont: {
               color: "#512DA8",
               size: 9
@@ -122,7 +118,7 @@ export default {
               size: 8
             },
             overlaying: "y",
-            side: "right"
+            side: "left"
           }
         }
       }

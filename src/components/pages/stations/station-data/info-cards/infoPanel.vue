@@ -115,6 +115,10 @@
                     <td>{{this.ti2}}</td>
                 </tr>
                 <tr>
+                    <th>Vent Status:</th>
+                    <td>{{this.vent_stat}}</td>
+                </tr>
+                <tr>
                     <th>Vent Ti 1:</th>
                     <td>{{this.vent_t1}}</td>
                 </tr>
@@ -217,6 +221,7 @@ export default {
             ta2: -999,
             ti1: -999,
             ti2: -999,
+            vent_stat: -999,
             vent_t1: -999,
             vent_t2: -999,
             // Comms Stats
@@ -261,6 +266,7 @@ export default {
                     this.vent_batt = (messageOBJ.data.frame_data['VENT_BATT_C']).toFixed(3) + ' V'
                     this.ti1 = (messageOBJ.data.frame_data['Ti1_C']).toFixed(3) + ' °C'
                     this.ti2 = (messageOBJ.data.frame_data['Ti2_C']).toFixed(3) + ' °C'
+                    this.vent_stat = messageOBJ.data.frame_data['VENT_STAT']
                     this.vent_t1 = (messageOBJ.data.frame_data['VENT_Ti1_C']).toFixed(3) + ' °C'
                     this.vent_t2 = (messageOBJ.data.frame_data['VENT_Ti2_C']).toFixed(3) + ' °C'
                     this.ta1 = (messageOBJ.data.frame_data['Ta1_C']).toFixed(3) + ' °C'

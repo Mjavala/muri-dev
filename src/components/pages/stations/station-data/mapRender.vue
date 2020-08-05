@@ -44,6 +44,7 @@
         :transparent="transparent"
         :attribution="attribution"
         :format="format"
+        :options="{updateWhenIdle: true}"
       >
       </l-wms-tile-layer>
     </l-map>
@@ -115,6 +116,9 @@ export default {
       }
     }
   },
+  mounted () {
+    this.updateNEXDARLayer()
+  },
   data() {
     return {
       markers: [],
@@ -155,7 +159,7 @@ export default {
       format: 'image/png',
       transparent: true,
       opacity: 0.5,
-      attribution: "Weather data © 2012 IEM Nexrad"
+      attribution: "Weather data © 2012 IEM Nexrad",
     }
   },
   methods: {
@@ -182,7 +186,19 @@ export default {
         altitude: this.currentAltitude
       }
       this.markers.push(markerObj)
+    },
+    
+    updateNEXDARLayer () {
+      setInterval(() => {
+        if (this.layers === 'nexrad-n0r-900913') {
+          this.layers = 'nexrad-n0r-900913-m05m'
+        } else if (this.layers === 'nexrad-n0r-900913-m05m') {
+          this.layers = 'nexrad-n0r-900913'
+        }
+        console.log('layer updated')
+      }, 60000);
     }
+    
   }
 }
 </script>
