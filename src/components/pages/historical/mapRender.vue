@@ -120,10 +120,13 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 .map-data{
-    width: 78vw;
-    height: 45vh;
+    width: 50vw;
+    height: 60vh;
     display: inherit;
-    padding: 2em;
+    padding: 0 2em;
+    position: absolute;
+    top: 1%;
+    left: 0;
 }
 .leaflet-control-attribution {
   display: none;

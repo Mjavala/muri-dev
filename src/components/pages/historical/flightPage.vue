@@ -183,8 +183,9 @@ export default {
     align-items: center;
     flex-direction: column;
     width: 100vw;
-    height: auto;
+    height: 100vh;
     margin-top: 3em;
+    position: relative;
   }
   .reload {
     position: absolute;

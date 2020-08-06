@@ -71,23 +71,6 @@ export default {
             gridwidth: 1,
             gridcolor: '#bdbdbd',
           },
-          yaxis2: {
-            automargin: true,
-            title: {
-              text: "Vent Batt",
-              standoff: 0
-            },
-            titlefont: {
-              color: "#512DA8",
-              size: 9
-            },
-            tickfont: {
-              color: "#512DA8",
-              size: 8
-            },
-            overlaying: "y",
-            side: "right"
-          }
         }
       }
     }
@@ -109,7 +92,6 @@ export default {
             type: 'scattergl',
             mode: 'lines',
             connectgaps: true,
-            yaxis: "y2",
             name: "vent_batt"
         }
         this.chart.traces.push(traceObj)
@@ -128,10 +110,11 @@ export default {
 
 <style scoped>
   #batt-graph{
-      padding: 2em;
-      margin-top: 1em;
-      margin-right: 3.5em;
-      width: 75vw;
-      height: 35vh;
+    position: absolute;
+    display: inline;
+    top: 32%;
+    left: 51%;
+    width: 45%;
+    height: 30.5%;
   }
 </style>

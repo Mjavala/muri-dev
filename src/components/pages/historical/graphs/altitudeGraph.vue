@@ -94,10 +94,12 @@ export default {
 
 <style scoped>
   #altitude-graph-hist{
-      padding: 2em;
-      margin-top: 1em;
-      margin-right: 3.5em;
-      width: 75vw;
-      height: 35vh;
+    position: absolute;
+    display: inline;
+    top: 1.5%;
+    left: 51%;
+    width: 45%;
+    height: 30.5;
   }
+
 </style>
