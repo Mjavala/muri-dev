@@ -37,14 +37,13 @@
         :opacity="1"
         :weight="4"
       />
-      <l-wms-tile-layer
+      <l-wms-tile-layer v-if="showLayer"
         :base-url="baseUrl"
         :layers="layers"
         :opacity="opacity"
         :transparent="transparent"
         :attribution="attribution"
         :format="format"
-        :options="{updateWhenIdle: true}"
       >
       </l-wms-tile-layer>
     </l-map>
@@ -116,8 +115,16 @@ export default {
       }
     }
   },
-  mounted () {
-    this.updateNEXDARLayer()
+  computed: {
+    uniqueUrl() {
+      return `${this.baseUrl}?r=${this.urlModifier}`;
+    }
+  },
+  mounted() {
+    this.layerRefresher = window.setInterval(this.refresh, 60000);
+  },
+  beforeDestroy() {
+    window.clearInterval(this.layerRefresher);
   },
   data() {
     return {
@@ -125,6 +132,9 @@ export default {
       statMarker: {},
       statCount: 0,
       currentDevice: '',
+      showLayer: true,
+      urlModifier: 1,
+      layerRefresher: undefined,
       currentAltitude: Number,
       currentPosition: {},
       currentStation: '',
@@ -187,18 +197,11 @@ export default {
       }
       this.markers.push(markerObj)
     },
-    
-    updateNEXDARLayer () {
-      setInterval(() => {
-        if (this.layers === 'nexrad-n0r-900913') {
-          this.layers = 'nexrad-n0r-900913-m05m'
-        } else if (this.layers === 'nexrad-n0r-900913-m05m') {
-          this.layers = 'nexrad-n0r-900913'
-        }
-        console.log('layer updated')
-      }, 60000);
+    refresh() {
+      this.urlModifier++
+      this.showLayer = false
+      this.$nextTick(() => (this.showLayer = true))
     }
-    
   }
 }
 </script>
