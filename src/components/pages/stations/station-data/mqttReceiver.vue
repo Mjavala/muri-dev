@@ -13,7 +13,11 @@
       <div class="top-data-last-range">
         Last Range: {{this.last_range}}
       </div>
-      <filterID v-bind:message="this.message" :messageStat="messageStat" :balloonToTrack2="balloonToTrack2"/>
+      <filterID 
+        @queryReady="queryReadyToMainPage"
+        v-bind:message="this.message" 
+        :messageStat="messageStat" 
+        :balloonToTrack2="balloonToTrack2"/>
     </div>
   </div>
 </template>
@@ -141,6 +145,12 @@ export default {
         return false
       } else {
         return true
+      }
+    },
+    queryReadyToMainPage (data) {
+      if (data === true) {
+        console.log(data)
+        this.$emit('queryReadyMain', true)
       }
     }
   }

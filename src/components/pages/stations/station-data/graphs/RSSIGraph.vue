@@ -8,7 +8,7 @@ import Plotly from 'plotly.js-dist/plotly'
 
 export default {
     props: [ 
-      'filteredRSSI', 'filteredRSSIStat'
+      'filteredRSSI', 'filteredRSSIStat', 'historicalRSSI'
     ],
     mounted () {
       let config = {displayModeBar: false, responsive: true}
@@ -21,48 +21,35 @@ export default {
     },
     watch: {
       filteredRSSI (newVal) {
-        if (this.statMessageCount === 0) {
-          this.statMessageCount = this.statMessageCount + 1
-        }
-        let objKey = Object.keys(newVal)
-        this.currentDevice = objKey[0]
-        let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
-        this.az = objKeyMap[0]
-        if (this.counter === 0 && this.statMessageCount === 1) {
-          this.timer = new Date()
-          this.addTrace(this.az, 'RSSI')
-          this.counter = this.counter + 1
-        } else {
-          this.addData(this.az)
+        this.live === true
+        if (this.historicalQueryDoneCheck > 0) {
+          let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
+          this.rssi = objKeyMap[0]
+          this.addData(this.rssi, 1)
         }
       },
       filteredRSSIStat(newVal){
-        if (this.statMessageCount1 === 0) {
-          this.statMessageCount1 = this.statMessageCount1 + 1
+        if (this.historicalQueryDoneCheck > 0 && this.live === true) {
+          let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
+          this.rssiFiltered = objKeyMap[0]
+          if (this.chart.traces.length > 0) {
+            this.addData(this.rssiFiltered, 0)
+          }
         }
-        let objKey = Object.keys(newVal)
-        this.currentDevice1 = objKey[0]
-        let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
-        this.elv = objKeyMap[0]
-        if (this.counter1 === 0 && this.statMessageCount1 === 1) {
-          this.addTrace(this.elv, 'Filtered RSSI')
-          this.counter1 = this.counter1 + 1
-        } else if (this.chart.traces.length > 1){
-          this.addDataElv(this.elv)
-        }
+      },
+      historicalRSSI (newVal) {
+        this.addTrace(newVal.x, newVal.y)
+        this.historicalQueryDoneCheck++
+        this.timer = new Date() // start 30 min live clock
       }
     },
     data() {
     return {
-      az: Number,
-      elv: Number,
-      currentDevice: '',
-      currentDevice1: '',
-      timer: Number,
-      counter: 0,
-      counter1: 0,
-      statMessageCount: 0,
-      statMessageCount1: 0,
+      rssiFiltered: Number,
+      rssi: Number,
+      timer: undefined,
+      live: false,
+      historicalQueryDoneCheck: 0,
       filteredRSSIHook: false,
       chart: {
         uuid: "1233",
@@ -112,7 +99,7 @@ export default {
     }
     },
     methods: {
-      addData (point) {
+      addData (point, trace) {
         const update = {
           x: [[new Date()]],
           y: [[point]]
@@ -120,7 +107,7 @@ export default {
         Plotly.extendTraces(
           'rssi-graph',
           update, 
-          [0],  // only 1 station
+          [trace], 
         )
         const newTime = new Date()
         const delta =  (newTime - this.timer) / 1000
@@ -130,44 +117,38 @@ export default {
           this.chart.traces[0].x.shift()
           this.filteredRSSIHook = true
         }
-      },
-      addDataElv (point) {
-        const update = {
-          x: [[new Date()]],
-          y: [[point]]
-        }
-        Plotly.extendTraces(
-          'rssi-graph',
-          update, 
-          [1],
-        )
-        if (this.filteredRSSIHook) {
+        if (trace === 1 && this.filteredRSSIHook === true) {
           this.chart.traces[1].y.shift()
           this.chart.traces[1].x.shift()
         }
       },
-      addTrace (point, name) {
-        if (this.chart.traces.length === 1) {
-            const traceObj = {
-              y: [point],
-              x: [new Date()],
-              type: 'scattergl',
-              mode: 'lines',
-              connectgaps: true,
-              name: name,
-          }
-          this.chart.traces.push(traceObj)
-        } else {
-          const traceObj = {
-              y: [point],
-              x: [new Date()],
-              type: 'scattergl',
-              mode: 'lines',
-              connectgaps: true,
-              name: name
-          }
-          this.chart.traces.push(traceObj)
+      addTrace (x, y) {
+          const filteredRSSITrace = {
+            y: y,
+            x: x,
+            type: 'scattergl',
+            mode: 'lines',
+            connectgaps: true,
+            name: 'RSSI Filtered',
         }
+        this.chart.traces.push(filteredRSSITrace)
+        // Empty rssi obj, db currently only has rssi filtered values
+        const RSSITrace = {
+            y: [],
+            x: [],
+            type: 'scattergl',
+            mode: 'lines',
+            connectgaps: true,
+            name: 'RSSI'
+        }
+        this.chart.traces.push(RSSITrace)
+        let config = {displayModeBar: false, responsive: true}
+        Plotly.react(
+            'rssi-graph',
+            this.chart.traces,
+            this.chart.layout,
+            config
+        )
       }
     }
   }

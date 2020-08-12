@@ -1,14 +1,16 @@
 <template>
   <div>
-    <altitudeGraph :idList="idList" :filteredAltitude="filteredAltitude" />
-    <rssiGraph  
-      :filteredRSSI="filteredRSSI"
+    <altitudeGraph :filteredAltitude="filteredAltitude" :historicalAltitude="historicalAltitude"/>
+    <rssiGraph 
+      :filteredRSSI="filteredRSSI" 
       :filteredRSSIStat="filteredRSSIStat"
+      :historicalRSSI="historicalRSSI"
     />
-    <tempGraph :idList="idList" :filteredTemp="filteredTemp" />
+    <tempGraph :filteredTemp="filteredTemp" :historicalTemp="historicalTemp"/>
     <battMon 
       :filteredBatteryMonitor="filteredBatteryMonitor"
-      :filteredVentBattery="filteredVentBattery" 
+      :filteredVentBattery="filteredVentBattery"
+      :historicalBattery="historicalBattery"
     />
     <hwAvgs :idList="idList" :filteredHwAvgs="filteredHwAvgs" />
     <cwAvgs :idList="idList" :filteredCwAvgs="filteredCwAvgs" />
@@ -27,7 +29,10 @@ import cwAvgs from './graphs/cwSpectralAvgs'
 
 export default {
 
-  props: ['id', 'message', 'payloadStat', 'balloonToTrack3'],
+  props: [
+    'id', 'message', 'payloadStat', 'balloonToTrack3', 
+    'tempGraphObject', 'rssiGraphObject', 'battGraphObject', 'altitudeGraphObject'
+    ],
   components: {
     altitudeGraph,
     rssiGraph,
@@ -50,6 +55,18 @@ export default {
     },
     balloonToTrack3 (newVal) {
       this.balloonToTrack = newVal
+    },
+    altitudeGraphObject (newVal) {
+      this.historicalAltitude = newVal
+    },
+    tempGraphObject (newVal) {
+      this.historicalTemp = newVal
+    },
+    battGraphObject (newVal) {
+      this.historicalBattery = newVal
+    },
+    rssiGraphObject (newVal) {
+      this.historicalRSSI = newVal
     }
   },
   data() {
@@ -69,7 +86,11 @@ export default {
         filteredCwAvgs: {},
         altitude: {},
         rssi: Number,
-        time: new Date()
+        time: new Date(),
+        historicalAltitude: {},
+        historicalTemp: {},
+        historicalBattery: {},
+        historicalRSSI: {}
     }
   },
   methods: {

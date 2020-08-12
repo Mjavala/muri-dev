@@ -103,7 +103,6 @@ export default {
             config
         )
       }
-      
     } 
   }
 </script>
@@ -112,9 +111,9 @@ export default {
   #batt-graph{
     position: absolute;
     display: inline;
-    top: 32%;
+    top: 33%;
     left: 51%;
     width: 45%;
-    height: 30.5%;
+    height: 29%;
   }
 </style>

@@ -6,6 +6,7 @@
           <mqttReceiver 
             @rawMessage="passRawMsg" 
             @statMessage="passStatMsg"
+            @queryReadyMain="showLoader"
             :connectReq="connectReq" 
             :disconnectReq="disconnectReq"
             :balloonToTrack="balloonToTrack"
@@ -55,21 +56,14 @@ export default {
   },
   watch: {
     id(newVal) {
+      // station to track
       this.station = newVal
     }
   },
   created () {
     this.id = this.$route.params.id
   },
-  mounted() {
-    this.showToggle()
-  },
   methods: {
-    showToggle(){
-      setTimeout(() => {
-        this.show = false
-      }, 1500)
-    },
     passRawMsg (newVal) {
       this.balloonInfoMessage = newVal
     },
@@ -83,9 +77,17 @@ export default {
       const balloon = messageOBJ.tracker.track['id']
       // currently tracking first balloon in current_tracks
       this.balloonToTrack = balloon
+      if (this.balloonToTrack === null || this.balloonToTrack === undefined) {
+        this.show = false
+      }
     },
     toggleFeed (data) {
       this.feed = data 
+    },
+    showLoader (data) {
+      if (data === true) {
+        this.show = false
+      }
     }
   }
 };

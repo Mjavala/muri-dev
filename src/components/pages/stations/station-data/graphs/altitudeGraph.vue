@@ -7,9 +7,7 @@
 import Plotly from 'plotly.js-dist/plotly'
 
 export default {
-    props: [
-      'idList', 'filteredAltitude'
-    ],
+    props: ['filteredAltitude', 'historicalAltitude'],
     mounted () {
       // let resp = {responsive: true}
       let config = {displayModeBar: false, responsive: true}
@@ -18,36 +16,24 @@ export default {
         this.chart.traces,
         this.chart.layout,
         config
-
       )
     },
     watch: {
       filteredAltitude(newVal){
-        let objKey = Object.keys(newVal)
-        this.currentDevice = objKey[0]
-        let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
-        let altitude = objKeyMap[0] / 1000
-        this.altitude = altitude
+        // Extend trace and data only after the historical data has been loaded on
+        if (this.historicalQueryDoneCheck > 0) {
+          let objKey = Object.keys(newVal)
+          this.currentDevice = objKey[0]
+          let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
+          let altitude = objKeyMap[0] / 1000
+          this.altitude = altitude
+          this.extendTrace(this.altitude)
+        }
       },
-      idList(newVal, oldVal){
-        if (newVal.length === oldVal.length){
-          // current device message
-          this.findTrace(newVal)
-          // check timeframe
-        }
-        if (newVal.length > oldVal.length && newVal.length > 1){
-          // new device detected, add trace
-          this.addTrace(this.altitude)
-          this.findTrace(newVal)
-        }
-        if (newVal.length === 1){
-          // first device
-          if (this.counter === 0) {
-            this.timer = new Date()
-            this.addTrace()
-            this.counter = this.counter + 1
-          }
-        }
+      historicalAltitude (newVal) {
+        this.addTrace(newVal.x, newVal.y)
+        this.historicalQueryDoneCheck++
+        this.timer = new Date() // start 30 min live clock
       }
     },
     data() {
@@ -55,7 +41,8 @@ export default {
       altitude: Number,
       currentDevice: '',
       throttleCount: 0,
-      timer: Number,
+      historicalQueryDoneCheck: 0,
+      timer: undefined,
       counter: 0,
       count: 0,
       chart: {
@@ -111,8 +98,7 @@ export default {
     }
     },
     methods: {
-      addData (altitude, traceIndex) {
-        // const t0 = new Date()
+      extendTrace (altitude) {
         const update = {
           x: [[new Date()]],
           y: [[altitude]]
@@ -120,37 +106,34 @@ export default {
         Plotly.extendTraces(
           'altitude-graph',
           update,
-          [traceIndex],
+          [0],
         )
-        // const t1 = new Date()
-        // console.log('took ' + (t1-t0) + 'miliseconds')
         const newTime = new Date()
         const delta =  (newTime - this.timer) / 1000
         if (delta >= 1800) {
           // 30 minute timeframe reached, need to remove first element of array as new one gets added
-          this.chart.traces[traceIndex].y.shift()
-          this.chart.traces[traceIndex].x.shift()
+          this.chart.traces[0].y.shift()
+          this.chart.traces[0].x.shift()
         }
       },
-      findTrace (deviceList) {
-        for (const [i, id] of deviceList.entries()){
-          if (id === this.currentDevice){
-            this.addData(this.altitude, i)
-          }
-        }
-      },
-      addTrace (altitude) {
+      addTrace (x, y) {
         const traceObj = {
-            y: [altitude],
-            x: [new Date()],
+            y: y,
+            x: x,
             type: 'scattergl',
             mode: 'lines',
             connectgaps: true,
-            name: this.currentDevice
         }
         this.chart.traces.push(traceObj)
+        let config = {displayModeBar: false, responsive: true}
+        Plotly.react(
+            'altitude-graph',
+            this.chart.traces,
+            this.chart.layout,
+            config
+        )
       }
-    } 
+    }
   }
 </script>
 

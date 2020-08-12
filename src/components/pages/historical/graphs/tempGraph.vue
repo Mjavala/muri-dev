@@ -102,9 +102,9 @@ export default {
   #temp-graph{
     position: absolute;
     display: inline;
-    top: 62.5%;
+    top: 63.5%;
     left: 51%;
     width: 45%;
-    height: 30.5%;
+    height: 29%;
   }
 </style>

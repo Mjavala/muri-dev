@@ -1,5 +1,5 @@
 <template>
-  <div id="azm-elv-graph">
+  <div id="battery-graph">
   </div>
 </template>
 
@@ -8,12 +8,12 @@ import Plotly from 'plotly.js-dist/plotly'
 
 export default {
     props: [ 
-      'filteredBatteryMonitor', 'filteredVentBattery'
+      'filteredBatteryMonitor', 'filteredVentBattery','historicalBattery'
     ],
     mounted () {
       let config = {displayModeBar: false, responsive: true}
       Plotly.react(
-        'azm-elv-graph',
+        'battery-graph',
         this.chart.traces,
         this.chart.layout,
         config
@@ -21,44 +21,30 @@ export default {
     },
     watch: {
       filteredBatteryMonitor(newVal){
-        if (this.statMessageCount === 0) {
-          this.statMessageCount = this.statMessageCount + 1
-        }
-        let objKey = Object.keys(newVal)
-        this.currentDevice = objKey[0]
-        let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
-        this.az = objKeyMap[0]
-        if (this.counter === 0 && this.statMessageCount === 1) {
-          this.timer = new Date()
-          this.addTrace(this.az, 'Batt Mon')
-          this.counter = this.counter + 1
-        } else {
-          this.addData(this.az)
+        if (this.historicalQueryDoneCheck > 0) {
+          let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
+          this.batt = objKeyMap[0]
+          this.addData(this.batt, 0)
         }
       },
       filteredVentBattery(newVal){
-        if (this.statMessageCount1 === 0) {
-          this.statMessageCount1 = this.statMessageCount1 + 1
+        if (this.historicalQueryDoneCheck > 0) {
+          let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
+          this.vbatt = objKeyMap[0]
+          this.addData(this.vbatt, 1)
         }
-        let objKey = Object.keys(newVal)
-        this.currentDevice1 = objKey[0]
-        let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
-        this.elv = objKeyMap[0]
-        if (this.counter1 === 0 && this.statMessageCount1 === 1) {
-          this.addTrace(this.elv, 'Vent Batt')
-          this.counter1 = this.counter1 + 1
-        } else {
-          this.addDataElv(this.elv)
-        }
+      },
+      historicalBattery (newVal) {
+        this.addTrace(newVal.x, newVal.y, newVal.y2)
+        this.historicalQueryDoneCheck++
+        this.timer = new Date() // start 30 min live clock
       }
     },
     data() {
     return {
-      az: Number,
-      elv: Number,
-      currentDevice: '',
-      currentDevice1: '',
-      timer: Number,
+      batt: Number,
+      vbatt: Number,
+      timer: undefined,
       counter: 0,
       counter1: 0,
       statMessageCount: 0,
@@ -111,15 +97,15 @@ export default {
     }
     },
     methods: {
-      addData (point) {
+      addData (point, trace) {
         const update = {
           x: [[new Date()]],
           y: [[point]]
         }
         Plotly.extendTraces(
-          'azm-elv-graph',
+          'battery-graph',
           update, 
-          [0],  // only 1 station
+          [trace],
         )
         const newTime = new Date()
         const delta =  (newTime - this.timer) / 1000
@@ -131,46 +117,39 @@ export default {
           this.chart.traces[1].x.shift()
         }
       },
-      addDataElv (point) {
-        const update = {
-          x: [[new Date()]],
-          y: [[point]]
+      addTrace (x, y, y2) {
+        let traceObj = {
+            y: y,
+            x: x,
+            type: 'scattergl',
+            mode: 'lines',
+            connectgaps: true,
+            name: 'batt_mon'
         }
-        Plotly.extendTraces(
-          'azm-elv-graph',
-          update, 
-          [1],  // repeating yourself cuz you suuuuuuuuck ~ deadlineisbelikedeadlinedo ~
+        this.chart.traces.push(traceObj)
+        traceObj = {
+            y: y2,
+            x: x,
+            type: 'scattergl',
+            mode: 'lines',
+            connectgaps: true,
+            name: "vent_batt"
+        }
+        this.chart.traces.push(traceObj)
+        let config = {displayModeBar: false, responsive: true}
+        Plotly.react(
+            'battery-graph',
+            this.chart.traces,
+            this.chart.layout,
+            config
         )
-      },
-      addTrace (point, name) {
-        if (this.chart.traces.length === 1) {
-            const traceObj = {
-              y: [point],
-              x: [new Date()],
-              type: 'scattergl',
-              mode: 'lines',
-              connectgaps: true,
-              name: name
-          }
-          this.chart.traces.push(traceObj)
-        } else {
-          const traceObj = {
-              y: [point],
-              x: [new Date()],
-              type: 'scattergl',
-              mode: 'lines',
-              connectgaps: true,
-              name: name
-          }
-          this.chart.traces.push(traceObj)
-        }
-      },
+      }
     }
   }
 </script>
 
 <style scoped>
-  #azm-elv-graph{
+  #battery-graph{
     display: inline;
     position: absolute;
     top: 40%;

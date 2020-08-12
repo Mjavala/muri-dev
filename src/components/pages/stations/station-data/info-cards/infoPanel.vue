@@ -272,13 +272,12 @@ export default {
                     this.vent_batt = (messageOBJ.data.frame_data['VENT_BATT_C']).toFixed(3) + ' V'
                     this.ti1 = (messageOBJ.data.frame_data['Ti1_C']).toFixed(3) + ' °C'
                     this.ti2 = (messageOBJ.data.frame_data['Ti2_C']).toFixed(3) + ' °C'
-                    this.vent_stat = messageOBJ.data.frame_data['VENT_STAT']
+                    this.vent_stat = (messageOBJ.data.frame_data['VENT_STAT']).toString(16)
                     this.vent_t1 = (messageOBJ.data.frame_data['VENT_Ti1_C']).toFixed(3) + ' °C'
                     this.vent_t2 = (messageOBJ.data.frame_data['VENT_Ti2_C']).toFixed(3) + ' °C'
                     this.ta1 = (messageOBJ.data.frame_data['Ta1_C']).toFixed(3) + ' °C'
                     this.ta2 = (messageOBJ.data.frame_data['Ta2_C']).toFixed(3) + ' °C'
                 }
-                // if (messageOBJ.data['FRAME_TYPE'] === '0xc109') {}
             }
         },
         stationTrackingInfoMessage (newVal) {

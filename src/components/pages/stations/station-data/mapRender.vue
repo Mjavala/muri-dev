@@ -37,6 +37,19 @@
         :opacity="1"
         :weight="4"
       />
+      <l-marker :lat-lng="startMarker">
+          <l-icon v-bind="iconConfigBalloon" />
+      </l-marker>
+      <l-marker :lat-lng="endMarker">
+          <l-icon v-bind="iconConfigFinish" />
+      </l-marker>
+      <l-polyline
+        :key="marker +'line'"
+        v-for="marker in historicalMarkers"
+        :lat-lngs="marker"
+        :opacity="1"
+        :weight="4"
+      />
       <l-wms-tile-layer v-if="showLayer"
         :base-url="baseUrl"
         :layers="layers"
@@ -56,6 +69,7 @@ import {LMap, LTileLayer, LMarker, LIcon , LPopup, LPolyline, LCircle ,LWMSTileL
 import L from 'leaflet';
 import Pin from '../../../../assets/pin.png'
 import Station from '../../../../assets/broadcast.png'
+import Finish from '../../../../assets/race-flag.png'
 
 
 export default {
@@ -71,7 +85,7 @@ export default {
     'l-wms-tile-layer': LWMSTileLayer
   },
   props: [
-    'filteredMarker', 'idList', 'filteredAltitude', 'filteredStatMarker'
+    'filteredMarker', 'idList', 'filteredAltitude', 'filteredStatMarker', 'mapArray'
   ],
   watch: {
     filteredMarker(newVal){
@@ -95,24 +109,32 @@ export default {
       }
     },
     idList(newVal, oldVal){
-      if (newVal.length === oldVal.length){
-        // loop through array and find the array index that matches the 'currentDevice'
-        // update the 'markers' array L.latlng field at the given index ..
-        this.matchDeviceId()
-      }
-      if (newVal.length > oldVal.length && newVal.length > 1){
-        // new device detected, push the 'filteredMarkers' object into the 'markers' array
-        this.addMarkerToMarkerArray()
-      }
-      if (newVal.length === 1){
-        // first device, add the first marker
-        if (this.count === 0){
-          if (this.currentPosition !== undefined) {
-            this.addMarkerToMarkerArray()
-            this.count = this.count + 1
+      if (this.historicalDataCounter > 0) {
+        if (newVal.length === oldVal.length){
+          // loop through array and find the array index that matches the 'currentDevice'
+          // update the 'markers' array L.latlng field at the given index ..
+          this.matchDeviceId()
+        }
+        if (newVal.length > oldVal.length && newVal.length > 1){
+          // new device detected, push the 'filteredMarkers' object into the 'markers' array
+          this.addMarkerToMarkerArray()
+        }
+        if (newVal.length === 1){
+          // first device, add the first marker
+          if (this.count === 0){
+            if (this.currentPosition !== undefined) {
+              this.addMarkerToMarkerArray()
+              this.count = this.count + 1
+            }
           }
         }
       }
+    },
+    mapArray (newVal) {
+      this.historicalMarkers.push([newVal])
+      this.startMarker = L.latLng(newVal[0][0], newVal[0][1])
+      this.endMarker = L.latLng(newVal[newVal.length - 1][0], newVal[newVal.length - 1][1])
+      this.historicalDataCounter++
     }
   },
   computed: {
@@ -132,9 +154,12 @@ export default {
       statMarker: {},
       statCount: 0,
       currentDevice: '',
+      historicalMarkers: [],
       showLayer: true,
       urlModifier: 1,
       layerRefresher: undefined,
+      startMarker: L.latLng(40, -105),
+      endMarker: L.latLng(40, -105),
       currentAltitude: Number,
       currentPosition: {},
       currentStation: '',
@@ -159,6 +184,10 @@ export default {
       },
       iconConfig: {
         'icon-url': Station,
+        'icon-size': [30,30],
+      },
+      iconConfigFinish: {
+        'icon-url': Finish,
         'icon-size': [30,30],
       },
       mapRender: {

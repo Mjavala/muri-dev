@@ -163,6 +163,17 @@ export default {
       }
     }
   },
+  computed: {
+    uniqueUrl() {
+      return `${this.baseUrl}?r=${this.urlModifier}`;
+    }
+  },
+  mounted () {
+    this.layerRefresher = window.setInterval(this.refresh, 60000);
+  },
+  beforeDestroy() {
+    window.clearInterval(this.layerRefresher);
+  },
   data() {
     return {
       markers: [],
@@ -171,6 +182,8 @@ export default {
       az: Number,
       elv: Number,
       bearing: Number,
+      layerRefresher: undefined,
+      showLayer: true,
       statMarker: {},
       statCount: 0,
       currentDevice: '',
@@ -235,6 +248,11 @@ export default {
         altitude: this.currentAltitude
       }
       this.markers.push(markerObj)
+    },
+    refresh() {
+      this.urlModifier++
+      this.showLayer = false
+      this.$nextTick(() => (this.showLayer = true))
     }
   }
 }

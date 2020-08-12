@@ -38,13 +38,22 @@
       :fillOpacity="0.1"
     >
     </l-circle>
+    <l-wms-tile-layer v-if="showLayer"
+      :base-url="baseUrl"
+      :layers="layers"
+      :opacity="opacity"
+      :transparent="transparent"
+      :attribution="attribution"
+      :format="format"
+    >
+    </l-wms-tile-layer>
     </l-map>
   </div>
 </template>
 
 <script>
 //TODO: Test render of markers / popups / prop data
-import {LMap, LTileLayer, LMarker, LIcon, LCircle, LPolyline} from 'vue2-leaflet'
+import {LMap, LTileLayer, LMarker, LIcon, LCircle, LPolyline, LWMSTileLayer} from 'vue2-leaflet'
 import L from 'leaflet';
 import Station from '../../../assets/broadcast.png'
 import Balloon from '../../../assets/pin.png'
@@ -57,6 +66,7 @@ export default {
     LIcon,
     LCircle,
     LPolyline,
+    'l-wms-tile-layer': LWMSTileLayer
   },
   mounted () {
     document.addEventListener('click', (e) => {
@@ -66,6 +76,7 @@ export default {
         }
       }
     })
+    this.layerRefresher = window.setInterval(this.refresh, 60000);
   },
   props: [
     'filteredMarker', 'idList', 'filteredBalloonMarker', 'balloonIdList', 'filteredAzimuth', 'filteredElevation'
@@ -136,6 +147,14 @@ export default {
       }
     }
   },
+  computed: {
+    uniqueUrl() {
+      return `${this.baseUrl}?r=${this.urlModifier}`;
+    }
+  },
+  beforeDestroy() {
+    window.clearInterval(this.layerRefresher);
+  },
   data() {
     return {
       markers: [],
@@ -143,6 +162,8 @@ export default {
       currentDevice: '',
       currentAzimuth: Number,
       currentElevation: Number,
+      layerRefresher: undefined,
+      showLayer: true,
       bearing: Number,
       currentDeviceAzimuth: '',
       currentDeviceElevation: '',
@@ -175,6 +196,12 @@ export default {
       mapRender: {
         url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
       },
+      baseUrl:'http://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi',
+      layers: 'nexrad-n0r-900913',
+      format: 'image/png',
+      transparent: true,
+      opacity: 0.5,
+      attribution: "Weather data © 2012 IEM Nexrad",
     }
   },
   methods: {
@@ -264,6 +291,11 @@ export default {
         latlng: L.latLng(this.currentBalloonPosition.lat, this.currentBalloonPosition.lng)
       }
       this.markersBalloon.push(markerObj)
+    },
+    refresh() {
+      this.urlModifier++
+      this.showLayer = false
+      this.$nextTick(() => (this.showLayer = true))
     }
   }
 }

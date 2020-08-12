@@ -8,7 +8,7 @@ import Plotly from 'plotly.js-dist/plotly'
 
 export default {
     props: [
-      'idList', 'filteredTemp'
+      'filteredTemp', 'historicalTemp'
     ],
     mounted () {
       let config = {displayModeBar: false, responsive: true}
@@ -26,32 +26,20 @@ export default {
         let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
         let temp = objKeyMap[0]
         this.temp = temp
+        this.extendTrace(this.temp)
       },
-      idList(newVal, oldVal){
-        if (newVal.length === oldVal.length){
-          // current device message
-          this.findTrace(newVal)
-        }
-        if (newVal.length > oldVal.length && newVal.length > 1){
-          // new device detected, add trace
-          this.addTrace(this.temp)
-          this.findTrace(newVal)
-        }
-        if (newVal.length === 1){
-          // first device
-          if (this.counter === 0) {
-            this.timer = new Date()
-            this.addTrace()
-            this.counter = this.counter + 1
-          }
-        }
+      historicalTemp (newVal) {
+        this.addTrace(newVal.x, newVal.y)
+        this.historicalQueryDoneCheck++
+        this.timer = new Date() // start 30 min live clock
       }
     },
     data() {
     return {
       temp: Number,
       currentDevice: '',
-      timer: Number,
+      historicalQueryDoneCheck: 0,
+      timer: undefined,
       count: 0,
       counter: 0,
       chart: {
@@ -102,48 +90,40 @@ export default {
     }
     },
     methods: {
-      addData (temp, traceIndex) {
-        /*let last = this.chart.traces[traceIndex].y[this.chart.traces[traceIndex].y.length - 1]
-        if (last === temp){
-          this.count = this.count + 1
-        }
-        if (last !== temp || this.count === 10) { 
-          this.count = 1 
-          } */
+      extendTrace (temp) {
         const update = {
           x: [[new Date()]],
           y: [[temp]]
         }
         Plotly.extendTraces(
           'temp-graph',
-          update, 
-          [traceIndex],
+          update,
+          [0],
         )
         const newTime = new Date()
         const delta =  (newTime - this.timer) / 1000
         if (delta >= 1800) {
           // 30 minute timeframe reached, need to remove first element of array as new one gets added
-          this.chart.traces[traceIndex].y.shift()
-          this.chart.traces[traceIndex].x.shift()
+          this.chart.traces[0].y.shift()
+          this.chart.traces[0].x.shift()
         }
       },
-      findTrace (deviceList) {
-        for (const [i, id] of deviceList.entries()){
-          if (id === this.currentDevice){
-            this.addData(this.temp, i)
-          }
-        }
-      },
-      addTrace (temp) {
+      addTrace (x, y) {
         const traceObj = {
-            y: [temp],
-            x: [new Date()],
+            y: y,
+            x: x,
             type: 'scattergl',
             mode: 'lines',
             connectgaps: true,
-            name: this.currentDevice
         }
         this.chart.traces.push(traceObj)
+        let config = {displayModeBar: false, responsive: true}
+        Plotly.react(
+            'temp-graph',
+            this.chart.traces,
+            this.chart.layout,
+            config
+        )
       }
     } 
   }

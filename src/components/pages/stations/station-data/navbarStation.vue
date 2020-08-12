@@ -7,6 +7,8 @@
     >
       <v-img id="iriss-logo" max-height="100" max-width="225" src="../../../../assets/iriss_logo.jpg" />
       <v-spacer />
+      <div id="station">{{this.diagnostics}}</div>
+      <v-spacer />
       <v-btn class="spacing-nav" light small>
         <router-link to="/">Home</router-link>
       </v-btn>
@@ -25,7 +27,6 @@ export default {
   watch: {
     station(newVal) {
       this.diagnostics = newVal
-      console.log('STATION FROM HOME ' + newVal)
     }
   },
   data () {
@@ -52,6 +53,15 @@ export default {
     position: absolute;
     z-index: 1000;
     height: 2.5em !important;
+  }
+  #station {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+    font-size: 1.75em;
+    font-weight: 500;
   }
   a {
     color: inherit;

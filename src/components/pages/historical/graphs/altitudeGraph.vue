@@ -87,7 +87,6 @@ export default {
             config
         )
       }
-      
     } 
   }
 </script>
@@ -96,10 +95,10 @@ export default {
   #altitude-graph-hist{
     position: absolute;
     display: inline;
-    top: 1.5%;
+    top: 2.5%;
     left: 51%;
     width: 45%;
-    height: 30.5;
+    height: 29%;
   }
 
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="map-data">
-    <l-map 
+    <l-map ref="map"
       v-bind="mapConfig"
     >
     <l-tile-layer 
@@ -55,7 +55,6 @@ export default {
   watch: {
     mapArray (newVal) {
         this.markers = newVal
-        //this.mapConfig.center = L.latLng(newVal[newVal.length - 1][0], newVal[newVal.length - 1][1])
         this.startMarker = L.latLng(newVal[0][0], newVal[0][1])
         this.endMarker = L.latLng(newVal[newVal.length - 1][0], newVal[newVal.length - 1][1])
         //let midpoint = this.markers[Math.round((this.markers.length -1) / 2)]
@@ -63,14 +62,12 @@ export default {
           this.mapConfig.zoom = 10
         }*/
         this.$emit('ready', true)
-        //const startBound = [newVal[0][0], newVal[0][1]]
-        //const endBound = [newVal[newVal.length - 1][0], newVal[newVal.length - 1][1]]
-        //this.$refs.features.mapObject.fitBounds(startBound, endBound);
+        const startBound = [newVal[0][0], newVal[0][1]]
+        const endBound = [newVal[newVal.length - 1][0], newVal[newVal.length - 1][1]]
+        this.$refs.map.mapObject.fitBounds([startBound, endBound], { padding: [100, 100] });
     },
     apogeeLatLong (newVal) {
-      console.log(newVal)
       this.apogeeMarker = L.latLng(newVal.lat, newVal.lon)
-      console.log(newVal.max)
       this.apogee = newVal.max
     }
   },

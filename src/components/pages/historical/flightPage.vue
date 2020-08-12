@@ -115,7 +115,6 @@ export default {
         }`,
         variables: { xbeeId, stationId }
     }).then( (response) => {
-      console.log(response)
       this.data_payload = response.data.device_data
       })
     this.noDataRequested = false

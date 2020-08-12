@@ -67,8 +67,8 @@ export default {
         this.showSubmitButton = true
       }
     },
-    data_payload (newVal, oldVal) {
-      if (newVal.length == oldVal.length) {
+    data_payload (newVal) {
+      if (newVal.length === this.knownDevices) {
         // done with for loop
         let objValues = Object.keys(newVal).map((k) => newVal[k]);
 
@@ -102,7 +102,8 @@ export default {
       stationList: [],
       deviceListResponse: [],
       showSubmitButton: false,
-      flight_dates: []
+      flight_dates: [],
+      knownDevices: undefined
     }
   },
   mounted() {
@@ -115,6 +116,7 @@ export default {
       }, 1500)
     },
     availableDevices (response) {
+      this.knownDevices = response.length
       response.forEach(element => {
         this.deviceList.push(element.addr)
         this.dateQuery(element.addr)

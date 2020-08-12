@@ -105,6 +105,6 @@ export default {
     top: 62.5%;
     left: 2%;
     width: 45%;
-    height: 30.5%;
+    height: 29%;
   }
 </style>

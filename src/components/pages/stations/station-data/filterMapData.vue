@@ -6,6 +6,7 @@
       :filteredStatMarker="filteredStatMarker"
       :filteredAltitude="filteredAltitude"
       :balloonToTrack4="balloonToTrack4"
+      :mapArray="mapArray"
      />
   </div>
 </template>
@@ -15,7 +16,7 @@ import L from 'leaflet';
 import MapRender from './mapRender'
 
 export default {
-  props: ['id', 'message', 'balloonToTrack3', 'payloadStat'],
+  props: ['id', 'message', 'balloonToTrack3', 'payloadStat', 'coordinateArray'],
   components: {
     MapRender
   },
@@ -33,6 +34,9 @@ export default {
     payloadStat (newVal) {
       this.messageStat = newVal
       this.assignDataObjectsStat(this.messageStat)
+    },
+    coordinateArray (newVal) {
+      this.mapArray = newVal
     }
   },
   data() {
@@ -44,6 +48,7 @@ export default {
       filteredMarker: {},
       filteredStatMarker: {},
       filteredAltitude: {},
+      mapArray: undefined,
       rssi: Number,
       balloonToTrack4: ''
     }
