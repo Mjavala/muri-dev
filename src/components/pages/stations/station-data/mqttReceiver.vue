@@ -17,7 +17,11 @@
         @queryReady="queryReadyToMainPage"
         v-bind:message="this.message" 
         :messageStat="messageStat" 
-        :balloonToTrack2="balloonToTrack2"/>
+        :balloonToTrack2="balloonToTrack2"
+        :getDataQuery="getDataQuery"
+        :queryDevice="queryDevice"
+        :stationFilter="stationFilter"
+        />
     </div>
   </div>
 </template>
@@ -27,7 +31,7 @@ import filterID from './filterID'
 
 export default {
   props:
-  ['station', 'connectReq', 'disconnectReq', 'balloonToTrack'],
+  ['station', 'connectReq', 'disconnectReq', 'balloonToTrack', 'getData', 'queryDeviceId'],
   mounted () {
     try {
       this.connect()
@@ -37,6 +41,7 @@ export default {
   },
   watch: {
     station(newVal) {
+      console.log(newVal)
       this.stationFilter = newVal
     },
     connectReq (newVal) {
@@ -51,6 +56,14 @@ export default {
     },
     balloonToTrack (newVal) {
       this.balloonToTrack2 = newVal
+    },
+    getData (newVal) {
+      if (newVal === true) {
+        this.getDataQuery = true
+      }
+    },
+    queryDeviceId (newVal) {
+      this.queryDevice = newVal
     }
   },
   data () {
@@ -68,7 +81,10 @@ export default {
       host: 'irisslive.net',
       port: 9001,
       username: 'muri',
-      password: 'demo2020'
+      password: 'demo2020',
+      getDataQuery: false,
+      queryDevice: undefined
+      
     }
   },
   components: {

@@ -10,7 +10,10 @@
             :connectReq="connectReq" 
             :disconnectReq="disconnectReq"
             :balloonToTrack="balloonToTrack"
-            :station="station"/>
+            :station="station"
+            :getData="getData"
+            :queryDeviceId="queryDeviceId"
+            />
             <infoPanel 
               :balloonToTrack="balloonToTrack" 
               :balloonInfoMessage="balloonInfoMessage" 
@@ -31,6 +34,8 @@ import NavBar from './navbarStation'
 import Loader from '../../loader'
 import infoPanel from './info-cards/infoPanel'
 import feed from './feed'
+import gql from 'graphql-tag';
+
 
 export default {
   components: {
@@ -43,7 +48,7 @@ export default {
   },
   data () {
     return {
-      show: true,
+      show: false,
       id: '',
       station: '',
       connectReq: false,
@@ -51,17 +56,40 @@ export default {
       balloonInfoMessage: '',
       stationTrackingInfoMessage: '',
       balloonToTrack: '',
-      feed: false
+      feed: false,
+      lastBalloonTime: undefined,
+      getData: false,
+      queryDeviceId: undefined
     }
   },
   watch: {
-    id(newVal) {
-      // station to track
-      this.station = newVal
+    lastBalloonTime (newVal) {
+      if (newVal !== null || newVal !== undefined) {
+        this.queryDeviceId = newVal[0].device_id
+        const lastMessageDate = new Date(newVal[0].data_time)
+        const today = new Date()
+
+      if(lastMessageDate.setHours(0,0,0,0) === today.setHours(0,0,0,0)) {
+        this.getData = true
+      }
+      }
     }
   },
-  created () {
-    this.id = this.$route.params.id
+  mounted () {
+    this.station = this.$route.params.id
+    this.$apollo.query({
+      query: gql `query lastBalloonTime($station: String!) {
+        device_data_aggregate(limit: 1, where: {station_id: {_eq: $station}}, order_by: {data_time: desc}) {
+          nodes {
+            data_time
+            device_id
+          }
+        }
+      }`,
+      variables: { station: this.station }
+    }).then( response => {
+      this.lastBalloonTime = response.data.device_data_aggregate.nodes
+    })
   },
   methods: {
     passRawMsg (newVal) {

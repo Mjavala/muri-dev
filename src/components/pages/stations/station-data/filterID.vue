@@ -27,7 +27,7 @@ import filterGraphData from './filterGraphData'
 import gql from 'graphql-tag';
 
 export default {
-  props: ['message', 'messageStat', 'balloonToTrack2'],
+  props: ['message', 'messageStat', 'balloonToTrack2', 'getDataQuery', 'queryDevice', 'stationFilter'],
   components: {
     filterMapData,
     filterGraphData
@@ -39,29 +39,9 @@ export default {
     },
     messageStat(newVal) {
       this.payloadStat = newVal
-      if (this.statMsgCount === 0) {
-        const message = JSON.parse(this.payloadStat)
-        this.station = message.station
-        this.statMsgCount++
-      }
     },
     balloonToTrack2(newVal) {
       this.balloonToTrack3 = newVal
-      this.balloon = newVal
-    },
-    balloon (newVal) {
-      this.queryBalloon = newVal
-      if (this.queryBalloon !== undefined && this.queryStation !== undefined && this.queryCount === 0) {
-          this.getHistoricalData(this.queryBalloon, this.queryStation)
-          this.queryCount++
-      }
-    },
-    station (newVal) {
-      this.queryStation = newVal
-      if (this.queryBalloon !== undefined && this.queryStation !== undefined && this.queryCount === 0) {
-          this.getHistoricalData(this.queryBalloon, this.queryStation)
-          this.queryCount++
-      }
     },
     data_payload () {
       for (var i = 0, len = this.data_payload.length; i < len; i++) {
@@ -74,13 +54,22 @@ export default {
           this.rssiArray.push(this.data_payload[i].rssi)
       }
       this.packageDataForGraphs()
+    },
+    queryDevice (newVal) {
+      this.queryBalloon = newVal
+    },
+    stationFilter (newVal) {
+      this.queryStation = newVal
+    },
+    getDataQuery (newVal) {
+      if (newVal === true) {
+        this.getHistoricalData(this.queryBalloon, this.queryStation)
+      }
     }
   },
   data() {
     return {
         payload: [],
-        station: undefined,
-        balloon: undefined,
         queryBalloon: undefined,
         queryStation: undefined,
         data_payload: undefined,
@@ -130,7 +119,6 @@ export default {
       }
     },
     getHistoricalData (balloon, station) {
-      console.log(balloon, station)
       if (balloon !== null && station !== null) {
         this.$apollo.query({
           query: gql` query data_payload($balloon: String!, $station: String!){
@@ -149,7 +137,6 @@ export default {
           }`,
           variables: { balloon, station }
         }).then( response => {
-          console.log(response)
           this.data_payload = response.data.device_data_aggregate.nodes
           this.$emit('queryReady', true)
         }).catch ( error => {console.log(error.message)})
