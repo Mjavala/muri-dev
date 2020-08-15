@@ -13,7 +13,7 @@
       <div class="top-data-last-range">
         Last Range: {{this.last_range}}
       </div>
-      <filterID 
+      <histQuery 
         @queryReady="queryReadyToMainPage"
         v-bind:message="this.message" 
         :messageStat="messageStat" 
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import filterID from './filterID'
+import histQuery from './histQuery'
 
 export default {
   props:
@@ -88,7 +88,7 @@ export default {
     }
   },
   components: {
-    filterID
+    histQuery
   },
   methods: {
     connect () {
