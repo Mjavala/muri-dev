@@ -15,10 +15,10 @@ workflows:
         requires:
           - build
 
-        docker:  
-          # specify the version you desire here (you might not want node)  
-        - image: circleci/node:12.16.2
+jobs:
+  docker:  
+  - image: circleci/node:12.16.2
 
-          steps:    
-            - checkout    
-            - run: ssh -oStrictHostKeyChecking=no -v $DROPLET_USER@$DROPLET_IP “./deploy_muri_dev.sh”
+  steps:    
+    - checkout    
+    - run: ssh -oStrictHostKeyChecking=no -v $DROPLET_USER@$DROPLET_IP “./deploy_muri_dev.sh”
