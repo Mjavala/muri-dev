@@ -143,4 +143,12 @@ export default {
   background: white !important;
   color: #121212 !important;
 }
+/* mobile styles */
+@media only screen and (max-width: 600px){
+  .map-data {
+    height: 70vh;
+    width: 100vw;
+    padding: 0;
+  }
+}
 </style>

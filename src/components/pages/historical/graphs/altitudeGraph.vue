@@ -1,5 +1,5 @@
 <template>
-  <div id="altitude-graph-hist">
+  <div id="altitude-graph">
   </div>
 </template>
 
@@ -81,7 +81,7 @@ export default {
         this.chart.traces.push(traceObj)
         let config = {displayModeBar: false, responsive: true}
         Plotly.react(
-            'altitude-graph-hist',
+            'altitude-graph',
             this.chart.traces,
             this.chart.layout,
             config
@@ -92,7 +92,7 @@ export default {
 </script>
 
 <style scoped>
-  #altitude-graph-hist{
+  #altitude-graph{
     position: absolute;
     display: inline;
     top: 2.5%;
@@ -101,4 +101,17 @@ export default {
     height: 29%;
   }
 
+  /* mobile styles */
+  @media only screen and (max-width: 600px){
+    #altitude-graph{
+      display: inline;
+      position: absolute;
+      top: 75%;
+      left: 0;
+      padding: 1em;
+      width: 90vw;
+      height: 60%;
+      z-index: 100;
+    }
+  }
 </style>

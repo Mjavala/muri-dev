@@ -1,7 +1,7 @@
 <template>    
     <v-app-bar app flat id="nav"
     >
-      <v-img id="iriss-logo" max-height="50" max-width="200" src="../../../assets/iriss_logo.jpg" />
+      <v-img id="iriss-logo" v-if="!$vuetify.breakpoint.xs" max-height="50" max-width="200" src="../../../assets/iriss_logo.jpg" />
       <v-btn icon depressed rounded id="live" v-if="mqttConnected">
           <v-icon id="live-icon" color="#76FF03">mdi-wifi</v-icon>
       </v-btn>
