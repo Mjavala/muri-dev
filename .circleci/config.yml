@@ -1,4 +1,16 @@
 # Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy-prod
+        filters:
+          branches:
+            only:
+              - master
+        requires:
+          -build
 version: 2.1
 # Use a package of configuration called an orb.
 orbs:
@@ -10,6 +22,7 @@ workflows:
   welcome:
     # Run the welcome/run job in its own container
     jobs:
+
       deploy-prod:
 
         docker:  
