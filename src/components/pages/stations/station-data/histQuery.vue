@@ -151,4 +151,11 @@ export default {
     position: relative;
     height: 45vh;
   }
+  /* mobile styles */
+  @media only screen and (max-width: 600px){
+    #map-graph-wrap {
+      position: absolute;
+      top: -11em;
+    }
+  }
 </style>

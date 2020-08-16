@@ -1,6 +1,6 @@
 <template>
     <div id="wrap">
-        <v-btn @click="changePauseState">pause</v-btn>
+        <v-btn small light id="pause-button" @click="changePauseState">pause</v-btn>
         <pre id="feed">
         </pre>
     </div>
@@ -67,5 +67,16 @@ export default {
         font-size: 0.7em;
         padding-top: 0.5em;
     }
-
+  /* mobile styles */
+  @media only screen and (max-width: 600px){
+    #wrap {
+        top: 10%;
+        left: 0;
+        z-index: 1000000;
+        width: 100vw;
+    }
+    #pause-button {
+        font-size: 0.6em;
+    }
+  }
 </style>>

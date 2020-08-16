@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div id="wrapper">
-      <v-btn icon depressed rounded id="live" v-if="this.status">
+      <v-btn v-show="!$vuetify.breakpoint.xs" icon depressed rounded id="live" v-if="this.status">
         <v-icon id="live-icon" color="#76FF03">mdi-wifi</v-icon>
       </v-btn>
       <div class="top-data">

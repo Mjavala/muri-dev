@@ -1,5 +1,5 @@
 <!--
-  - FilterID component ingests (props) station messages (messages) and balloon messages (messageRaw).
+  - FilterID component ingests (props) station messages and balloon messages.
   - A list of all known stations and balloons are populated reactively and passed to the filteredMapData component.
   - TODO: map out @as2 custom event. 
     - This is the user click of a station that has to be propegated to the mqttReceiver component.

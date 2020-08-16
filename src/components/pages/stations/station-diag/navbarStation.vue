@@ -1,8 +1,10 @@
-<template>    
+<template>
+  <div>
     <v-app-bar
         app
         id="nav"
         flat
+        v-if="!$vuetify.breakpoint.xs"
     >
       <v-img id="iriss-logo" max-height="100" max-width="225" src="../../../../assets/iriss_logo.jpg" />
       <v-spacer />
@@ -19,15 +21,22 @@
         Feed
       </v-btn>
     </v-app-bar>
+    <navbarMobile v-if="$vuetify.breakpoint.xs" :station="station" @showFeedMobile="toggleFeed"/>
+  </div>
 </template>
 
 <script>
+import navbarMobile from './navbarStationMobile'
+
 export default {
   props: ['station'],
   watch: {
     station(newVal) {
       this.diagnostics = newVal
     }
+  },
+  components: {
+    navbarMobile
   },
   data () {
     return {

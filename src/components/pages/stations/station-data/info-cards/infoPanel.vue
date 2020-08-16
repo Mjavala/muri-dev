@@ -180,12 +180,6 @@
                 </tr>
             </table>
         </div>
-        <div  class="comms-stats" >
-        <div class="title">Instrument Data</div>
-            <div class="Instrument-data-wrap">
-                <div class="tbd"> TBD </div>
-            </div>
-        </div>
     </div>
 </template>
 
@@ -355,17 +349,16 @@ export default {
         justify-content: center;
         align-items: center;
     }
-    /*
-    @media only screen and (min-width: 1900px) and (min-height: 1080px) {
-        #data-wrapper{
-            margin: 2em 1em;
-        }
-    }  
-    @media only screen and (min-width: 1900px) and (min-height: 1200px) {
-        #data-wrapper{
-            margin: 1em 1em;
-        }
+  /* mobile styles */
+  @media only screen and (max-width: 600px){
+    #data-wrapper  {
+        flex-direction: column;
+        font-size: 0.6em;
+        position: absolute;
+        top: 275%;
     }
-    */ 
-
+    th {
+        width: 157px;
+    }
+  }
 </style>

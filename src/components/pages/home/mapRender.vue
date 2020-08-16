@@ -47,13 +47,14 @@
       :format="format"
     >
     </l-wms-tile-layer>
+    <l-geo-json :geojson="geojson" :options="geoJSON_options"></l-geo-json>
     </l-map>
   </div>
 </template>
 
 <script>
 //TODO: Test render of markers / popups / prop data
-import {LMap, LTileLayer, LMarker, LIcon, LCircle, LPolyline, LWMSTileLayer} from 'vue2-leaflet'
+import {LMap, LTileLayer, LMarker, LIcon, LCircle, LPolyline, LWMSTileLayer, LGeoJson} from 'vue2-leaflet'
 import L from 'leaflet';
 import Station from '../../../assets/broadcast.png'
 import Balloon from '../../../assets/pin.png'
@@ -66,8 +67,36 @@ export default {
     LIcon,
     LCircle,
     LPolyline,
+    LGeoJson,
     'l-wms-tile-layer': LWMSTileLayer
   },
+  async created () {
+
+// GET Datestring for today's file
+    const date = new Date();
+    const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' }) 
+    const [{ value: month },,{ value: day },,{ value: year }] = dateTimeFormat.formatToParts(date) 
+
+    var fName = `https://irisslive.net/bts/AUTO_JSON/MARS_${year }${month}${day}_1400.json`;
+
+    console.log("Attempint to load prediction: " + fName);
+
+    //const fName = 'https://irisslive.net/bts/AUTO_JSON/TODAY.geojson'
+    const response = await fetch(fName, {
+      mode: 'no-cors' // 'cors' by default
+    });
+    var thisTXT= await response.text();
+
+    var lines = thisTXT.split("\n");
+
+    console.log("Prediction Fetch Complete." );
+    console.log(lines[0]);
+
+    //console.log('GOT: ' + thisJSON);
+    this.geojson = JSON.parse(lines[1]);
+    
+  },
+
   mounted () {
     document.addEventListener('click', (e) => {
       for (const [i, markersObj] of this.markers.entries()) {
@@ -83,54 +112,50 @@ export default {
   ],
   watch: {
     filteredMarker(newVal){
-      let objKey = Object.keys(newVal)
-      this.currentDevice = objKey[0]
-      let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
-      this.currentPosition = objKeyMap[0]
+      let {marker, data} = this.unpackObj(newVal)
+      this.currentStation = marker
+      this.currentPosition = data
     },
     filteredAzimuth (newVal) {
-      let objKey = Object.keys(newVal)
-      this.currentDeviceAzimuth = objKey[0]
-      let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
-      this.currentAzimuth = objKeyMap[0]
-      this.matchDeviceIdForPolyline()
+      let {marker, data} = this.unpackObj(newVal)
+      this.currentStationAzimuth = marker
+      this.currentAzimuth = data
+      this.updateData('azimuth')
     },
     filteredElevation (newVal) {
-      let objKey = Object.keys(newVal)
-      this.currentDeviceElevation = objKey[0]
-      let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
-      this.currentElevation = objKeyMap[0]
-      this.matchDeviceIdForElevation()
+      let {marker, data} = this.unpackObj(newVal)
+      this.currentStationElevation = marker
+      this.currentElevation = data
+      this.updateData('elevation')
+    },
+    filteredBalloonMarker(newVal) {
+      let {marker, data} = this.unpackObj(newVal)
+      this.currentBalloon = marker
+      this.currentBalloonPosition = data
     },
     idList(newVal, oldVal){
       if (newVal.length === oldVal.length){
         // loop through array and find the array index that matches the 'currentDevice'
         // update the 'markers' array L.latlng field at the given index
-        this.matchDeviceId()
+        this.updateData('marker')
       }
       if (newVal.length > oldVal.length && newVal.length > 1){
         // new device detected, push the 'filteredMarkers' object into the 'markers' array
-        this.addMarkerToMarkerArray()
+        this.addMarkerToStationMarkerArray()
       }
       if (newVal.length === 1){
         // first device, add the first marker
         if (this.count === 0){
-          this.addMarkerToMarkerArray()
+          this.addMarkerToStationMarkerArray()
           this.count = this.count + 1
         }
       }
-    },
-    filteredBalloonMarker(newVal) {
-      let objKey = Object.keys(newVal)
-      this.currentBalloon = objKey[0]
-      let objKeyMap = Object.keys(newVal).map((k) => newVal[k])
-      this.currentBalloonPosition = objKeyMap[0]
     },
     balloonIdList(newVal, oldVal) {
       if (newVal.length === oldVal.length){
         // loop through array and find the array index that matches the 'currentDevice'
         // update the 'markers' array L.latlng field at the given index
-        this.matchBalloonId()
+        this.updateData('balloon')
       }
       if (newVal.length > oldVal.length && newVal.length > 1){
         // new device detected, push the 'filteredMarkers' object into the 'markers' array
@@ -159,21 +184,21 @@ export default {
     return {
       markers: [],
       markersBalloon: [],
-      currentDevice: '',
+      currentStation: undefined,
       currentAzimuth: Number,
       currentElevation: Number,
       layerRefresher: undefined,
       showLayer: true,
       bearing: Number,
-      currentDeviceAzimuth: '',
-      currentDeviceElevation: '',
+      currentStationAzimuth: undefined,
+      currentStationElevation: undefined,
       currentBalloon: '',
       currentPosition: {},
       currentBalloonPosition: {},
       count: 0,
       countBalloon: 0,
       mapConfig: {
-        zoom: 7,
+        zoom: 9,
         minZoom: 2,
         center: L.latLng(40, -105),
         Bounds: [
@@ -202,39 +227,59 @@ export default {
       transparent: true,
       opacity: 0.5,
       attribution: "Weather data © 2012 IEM Nexrad",
+      geojson: null,
+      geoJSON_options: {
+        pointToLayer: function (feature, latlng) {
+            //Styles
+            var geojsonMarkerOptions = {
+                radius: 6,
+                fillColor: "#ff7800",
+                color: "#000",
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.6
+            };
+
+            return L.circleMarker(latlng, geojsonMarkerOptions);
+        },
+        onEachFeature: function onEachFeature(feature, layer) {
+            switch (feature.properties.title) {
+                case "Landing": layer.setStyle({fillColor :'red'});  break;
+                case "Launch": layer.setStyle({fillColor :'green'});  break;
+                case "Apogee": layer.setStyle({fillColor :'blue'}); layer.bindPopup("<strong>Apogee</strong>");  break;
+                case "Cut-Down": layer.setStyle({fillColor :'orange'}); break;
+                case "Balloon In Measurement Range (20-40 km)": layer.setStyle({color :'#CCFF99', opacity: 0.8, dashArray: "5,15"}); break;
+                case "Balloon Trajectory": layer.setStyle({color: "#6666FF", opacity: 0.8 }); break;
+            }
+        }
+      },
     }
   },
   methods: {
     latLng(lat,long){
       return L.latLng(lat,long)
     },
-    updateMarker(i) {
-      this.markers[i].latlng = L.latLng(this.currentPosition.lat, this.currentPosition.lng)
-    },
-    updateElevation(i) {
-      this.markers[i].elevation = this.currentElevation
-    },
-    updateBalloonMarker(i) {
-      this.markersBalloon[i].latlng = L.latLng(this.currentBalloonPosition.lat, this.currentBalloonPosition.lng)
-    },
-    matchDeviceId () {
+    updateData (type) {
       for (const [i, markersObj] of this.markers.entries()) {
-        if (this.currentDeviceAzimuth === markersObj.id) {
-          this.updateMarker(i)
+        if (type === 'elevation') {
+          if (this.currentStationElevation === markersObj.id) {
+            this.markers[i].elevation = this.currentElevation
+          }
         }
-      }
-    },
-    matchDeviceIdForPolyline () {
-      for (const [i, markersObj] of this.markers.entries()) {
-        if (this.currentDeviceAzimuth === markersObj.id) {
-          this.pushPolylineArray(i)
+        if (type === 'azimuth') {
+          if (this.currentStationAzimuth === markersObj.id) {
+            this.pushPolylineArray(i)
+          }
         }
-      }
-    },
-    matchDeviceIdForElevation () {
-      for (const [i, markersObj] of this.markers.entries()) {
-        if (this.currentDeviceElevation === markersObj.id) {
-          this.updateElevation(i)
+        if (type === 'station') {
+          if (this.currentStation === markersObj.id) {
+            this.markers[i].latlng = L.latLng(this.currentPosition.lat, this.currentPosition.lng)
+          }
+        }
+        if (type === 'balloon') {
+          if (this.currentBalloon === markersObj.id) {
+            this.markersBalloon[i].latlng = L.latLng(this.currentBalloonPosition.lat, this.currentBalloonPosition.lng)
+          }
         }
       }
     },
@@ -256,29 +301,22 @@ export default {
       if (azimuth > 270 && azimuth <= 360) {
         this.bearing = - (360 - azimuth)
       }
-        const R = 6378.1
-        const brng = this.bearing * Math.PI / 180
-        const d = 100 
-        const lat1 = start.lat *  Math.PI / 180
-        const lon1 = start.lng *  Math.PI / 180
-        const lat2 = Math.asin( Math.sin(lat1) * Math.cos(d/R) + Math.cos(lat1)*Math.sin(d/R)*Math.cos(brng))
-        const lon2 = lon1 + Math.atan2(Math.sin(brng)*Math.sin(d/R)*Math.cos(lat1), Math.cos(d/R)-Math.sin(lat1)*Math.sin(lat2))
+      const R = 6378.1
+      const brng = this.bearing * Math.PI / 180
+      const d = 100 
+      const lat1 = start.lat *  Math.PI / 180
+      const lon1 = start.lng *  Math.PI / 180
+      const lat2 = Math.asin( Math.sin(lat1) * Math.cos(d/R) + Math.cos(lat1)*Math.sin(d/R)*Math.cos(brng))
+      const lon2 = lon1 + Math.atan2(Math.sin(brng)*Math.sin(d/R)*Math.cos(lat1), Math.cos(d/R)-Math.sin(lat1)*Math.sin(lat2))
 
-        const lat2Final = lat2 * 180 / Math.PI
-        const lon2Final = lon2 * 180 / Math.PI
-        const endpoint = L.latLng(lat2Final, lon2Final)
-        return endpoint
+      const lat2Final = lat2 * 180 / Math.PI
+      const lon2Final = lon2 * 180 / Math.PI
+      const endpoint = L.latLng(lat2Final, lon2Final)
+      return endpoint
     },
-    matchBalloonId () {
-      for (const [i, markersObj] of this.markersBalloon.entries()) {
-        if (this.currentBalloon === markersObj.id) {
-          this.updateBalloonMarker(i)
-        }
-      }
-    },
-    addMarkerToMarkerArray() {
+    addMarkerToStationMarkerArray() {
       const markerObj = {
-        id: this.currentDevice,
+        id: this.currentStation,
         latlng: L.latLng(this.currentPosition.lat, this.currentPosition.lng),
         polylines: [],
         elevation: Number
@@ -296,6 +334,14 @@ export default {
       this.urlModifier++
       this.showLayer = false
       this.$nextTick(() => (this.showLayer = true))
+    },
+    unpackObj (data) {
+      let objKey = Object.keys(data)[0]
+      let objKeyMap = Object.keys(data).map((k) => data[k])[0]
+      return {
+        marker: objKey, 
+        data: objKeyMap
+      }
     }
   }
 }
@@ -335,5 +381,13 @@ export default {
 .leaflet-control-zoom-out{
   background: white !important;
   color: #121212 !important;
+}
+/* mobile styles */
+@media only screen and (max-width: 600px){
+    .map-home {
+      height: 75vh;
+      width: 100vw;
+      padding: 0;
+    }
 }
 </style>
