@@ -2,8 +2,6 @@ version: 2.1
 # Define the jobs we want to run for this project
 jobs:
   build:
-    docker:
-      - image: circleci/node:12.16.2
     steps:
       - checkout
       - run: ssh -oStrictHostKeyChecking=no -v $DROPLET_USER@$DROPLET_IP “./deploy_muri_dev.sh”
