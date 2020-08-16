@@ -10,4 +10,13 @@ workflows:
   welcome:
     # Run the welcome/run job in its own container
     jobs:
-      - welcome/run
+      deploy-prod:
+
+        docker:  
+        
+          # specify the version you desire here (you might not want node)  
+          - image: circleci/node:12.16.2
+
+          steps:    
+            - checkout    
+            - run: ssh -oStrictHostKeyChecking=no -v $DROPLET_USER@$DROPLET_IP “./deploy_muri_dev.sh”
