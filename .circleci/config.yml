@@ -6,8 +6,7 @@ jobs:
       - image: circleci/node:12.16.2
     steps:
       - checkout
-      - run: echo $HOME
-      - run: ssh -oStrictHostKeyChecking=no -v $DROPLET_USER@$DROPLET_IP “./deploy_muri_dev.sh”
+      - run: ssh -oStrictHostKeyChecking=no -v $DROPLET_USER@$DROPLET_IP “/home/circleci/deploy_muri_dev.sh”
 
 # Orchestrate our job run sequence
 workflows:
