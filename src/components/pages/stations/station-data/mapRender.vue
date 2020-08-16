@@ -6,7 +6,6 @@
     <l-tile-layer 
       v-bind="mapRender"
     />
-    <l-control-layers > </l-control-layers>
       <l-marker
         :key="marker.id"
         v-for="marker in markers"
@@ -59,7 +58,7 @@
 
 <script>
 //TODO: Test render of markers / popups / prop data
-import {LMap, LTileLayer, LMarker, LIcon , LPopup, LPolyline, LCircle ,LWMSTileLayer, LControlLayers} from 'vue2-leaflet'
+import {LMap, LTileLayer, LMarker, LIcon , LPopup, LPolyline, LCircle ,LWMSTileLayer} from 'vue2-leaflet'
 import L from 'leaflet';
 import Pin from '../../../../assets/pin.png'
 import Station from '../../../../assets/broadcast.png'
@@ -75,7 +74,6 @@ export default {
     LPolyline,
     LPopup,
     LCircle,
-    LControlLayers,
     'l-wms-tile-layer': LWMSTileLayer
   },
   props: [
@@ -83,6 +81,7 @@ export default {
   ],
   watch: {
     filteredMarker(newVal){
+      this.live = true
       let objKey = Object.keys(newVal)
       this.currentDevice = objKey[0]
       let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
@@ -155,6 +154,8 @@ export default {
       showLayer: true,
       urlModifier: 1,
       layerRefresher: undefined,
+      live: false,
+      startMarker: L.latLng(40, -105),
       currentAltitude: Number,
       currentPosition: {},
       currentStation: '',
@@ -256,4 +257,12 @@ export default {
   background: white !important;
   color: #121212 !important;
 }
+  /* mobile styles */
+  @media only screen and (max-width: 600px){
+    .map-data {
+      height: 70vh;
+      width: 100vw;
+      padding: 0;
+    }
+  }
 </style>

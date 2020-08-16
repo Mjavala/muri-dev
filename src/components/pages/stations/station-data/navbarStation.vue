@@ -1,29 +1,32 @@
-<template>    
-    <v-app-bar
-        app
-        id="nav"
-        flat
-        color="#fff"
-    >
-      <v-img id="iriss-logo" max-height="100" max-width="225" src="../../../../assets/iriss_logo.jpg" />
-      <v-spacer />
-      <div id="station">{{this.diagnostics}}</div>
-      <v-spacer />
-      <v-btn class="spacing-nav" light small>
-        <router-link to="/">Home</router-link>
-      </v-btn>
-      <v-btn id="station-diagnostics" light small @click="routeToDiagnostics">
-        Station Diagnostics
-      </v-btn>
-      <v-btn class="spacing-nav" light small @click="toggleFeed">
-        Feed
-      </v-btn>
+<template>   
+  <div>
+      <v-app-bar app id="nav" flat v-if="!$vuetify.breakpoint.xs">
+        <v-img id="iriss-logo" max-height="100" max-width="225" src="../../../../assets/iriss_logo.jpg" />
+        <v-spacer />
+        <div id="station">{{this.diagnostics}}</div>
+        <v-spacer />
+        <v-btn class="spacing-nav" light small>
+          <router-link to="/">Home</router-link>
+        </v-btn>
+        <v-btn id="station-diagnostics" light small @click="routeToDiagnostics">
+          Station Diagnostics
+        </v-btn>
+        <v-btn class="spacing-nav" light small @click="toggleFeed">
+          Feed
+        </v-btn>
     </v-app-bar>
+    <navBarMobile v-if="$vuetify.breakpoint.xs" :station="station" @showFeedMobile="toggleFeed"/>
+  </div> 
 </template>
 
 <script>
+import navBarMobile from './navBarStationMobile'
+
 export default {
   props: ['station'],
+  components: {
+    navBarMobile
+  },
   watch: {
     station(newVal) {
       this.diagnostics = newVal
@@ -73,11 +76,5 @@ export default {
   .graph-button {
     margin: 0 4px;
     z-index: 10;
-  }
-  .active {
-    background-color: #76FF03 !important;
-  }
-  .noShowGraph {
-    z-index: -1 !important;
   }
 </style>

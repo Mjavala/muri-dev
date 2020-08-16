@@ -107,4 +107,16 @@ export default {
     width: 45%;
     height: 29%;
   }
+  @media only screen and (max-width: 600px){
+    #rssi-graph{
+      display: inline;
+      position: absolute;
+      top: 140%;
+      left: 0;
+      padding: 1em;
+      width: 90vw;
+      height: 60%;
+      z-index: 100;
+    }
+  }
 </style>

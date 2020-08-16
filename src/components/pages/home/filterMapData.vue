@@ -1,9 +1,4 @@
-<!--
-  Filters map data and passes as props to the map render component
-  TODO: 
-    - make object with all prop data fields and pass this instead of individual props
-    - as2 rename
--->
+<!-- Filters map data and passes as props to the map render component -->
 <template>
   <div>
     <MapRender 

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div id="wrapper">
-      <v-btn icon depressed rounded id="live" v-if="this.status">
+      <v-btn v-show="!$vuetify.breakpoint.xs" icon depressed rounded id="live" v-if="this.status">
         <v-icon id="live-icon" color="#76FF03">mdi-wifi</v-icon>
       </v-btn>
       <div class="top-data">
@@ -259,6 +259,33 @@ export default {
     }
     100% {
       box-shadow: 0 0 0 15px rgba(0, 0, 0, 0);
+    }
+  }
+  /* mobile styles */
+  @media only screen and (max-width: 600px){
+    .top-data  {
+      position: absolute;
+      top: -6em;
+      left: 0;
+      font-size: 0.8em;
+      padding: 0.5em;
+    }
+    .top-data-rssi  {
+      position: absolute;
+      top: -6em;
+      left: 36.5%;
+      font-size: 0.8em;
+      padding: 0.5em;
+    }
+    .top-data-last-range  {
+      position: absolute;
+      top: -6em;
+      left: 56.5%;
+      font-size: 0.8em;
+      padding: 0.5em;
+    }
+    #wrapper {
+      margin: 0;
     }
   }
 </style>

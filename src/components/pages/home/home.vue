@@ -10,6 +10,8 @@
             @stationsFromMap="StationClickedFromMap"
         />
         <div id="stations-dropdown">
+            <p class="hidden-xs-only" id="instructions">Click a Station or Select from list, then pick Station Data to display 
+                payload data from that receive station, or click Station Diagnostics to view Receive Station Information</p>
             <!-- https://vuetifyjs.com/en/components/selects/ -->
             <v-select
                 :items="items"
@@ -17,6 +19,7 @@
                 filled
                 v-model="station"
             ></v-select>
+            <p class="hidden-xs-only"><i>Note: simulation from today at 1400 will be displayed if available. </i></p>
         </div>
     </div>
     </v-app>
@@ -38,7 +41,7 @@ export default {
     watch: {
         newStationList(newVal) {
             this.items = newVal
-        }
+        },
     },
     // regular javascript methods
     methods: {
@@ -73,6 +76,7 @@ export default {
     }
     #home-wrap {
         position: relative;
+        height: 100vh;
     }
     #stations-dropdown {
         width: 20vw;
@@ -88,5 +92,21 @@ export default {
     }
     #stations {
         z-index: 10;
+    }
+    #instructions {
+        font-family: 'Avenir', Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        color: #2c3e50;
+        font-size: 1em;
+        font-weight: 600;
+    }
+    /* mobile styles */
+    @media only screen and (max-width: 600px){
+        #stations-dropdown {
+            width: 50vw;
+            top: 87.5%;
+            z-index: 1000000;
+        }
     }
 </style>

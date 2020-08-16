@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="map-filter">
     <MapRender 
       :idList="idList" 
       :filteredMarker="filteredMarker"
@@ -91,3 +91,12 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  @media only screen and (max-width: 600px){
+    #map-filter {
+      position: absolute;
+      top: -7%;
+    }
+  }
+</style>

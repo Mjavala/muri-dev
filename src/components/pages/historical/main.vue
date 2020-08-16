@@ -2,9 +2,6 @@
 <v-app>
   <navBar />
   <Loader v-if="show"></loader>
-  <v-icon class="reload" @click="reloadPage" v-if="showSubmitButton">
-    mdi-refresh
-  </v-icon>
   <div class="data-wrapper">
     <div id="form-wrap">
       <div class="form-item" v-show="!show">
@@ -24,7 +21,7 @@
             v-on:input="stationSelected = true"
         ></v-select>
       </div>
-      <div class="form-item" v-if="showSubmitButton">
+      <div id="get-data-button" class="form-item" v-if="showSubmitButton">
         <v-btn @click="getDeviceData(device, station)">
           Get Flight Data
         </v-btn>
@@ -209,15 +206,20 @@ export default {
     height: auto;
     margin-top: 3em;
   }
-  .reload {
-    position: absolute;
-    top: 3em;
-    right: 3em;
-  }
   .v-list-item__title {
     font-size: 0.9em !important;
   }
   .v-menu__content {
     min-width: 300px !important;
+  }
+  /* mobile styles */
+  @media only screen and (max-width: 600px){
+    #get-data-button {
+      position: absolute;
+      top: 20em;
+    }
+    .form-item {
+      width: 100vw;
+    }
   }
 </style>

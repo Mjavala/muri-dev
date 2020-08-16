@@ -147,4 +147,16 @@ export default {
     height: 40%;
     z-index: 100;
   }
+  /* mobile styles */
+  @media only screen and (max-width: 600px){
+    #altitude-graph{
+      display: inline;
+      position: absolute;
+      top: 150%;
+      padding: 1em;
+      width: 90vw;
+      height: 60%;
+      z-index: 100;
+    }
+  }
 </style>

@@ -107,4 +107,17 @@ export default {
     width: 45%;
     height: 29%;
   }
+  /* mobile styles */
+  @media only screen and (max-width: 600px){
+    #temp-graph{
+      display: inline;
+      position: absolute;
+      top: 205%;
+      left: 0;
+      padding: 1em;
+      width: 90vw;
+      height: 60%;
+      z-index: 100;
+    }
+  }
 </style>

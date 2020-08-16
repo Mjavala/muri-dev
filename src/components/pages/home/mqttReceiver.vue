@@ -55,7 +55,6 @@ export default {
     return {
       message: '',
       messageRaw: '',
-      logs: [],
       live: false,
       clientID: "clientID-" + parseInt(Math.random() * 100),
       host: 'irisslive.net',
@@ -100,12 +99,9 @@ export default {
       this.client.onConnect = this.onConnect
     },
     onConnect(){
-        //console.log("Connected")
         this.live = true
         this.client.subscribe("muri/stat")
         this.client.subscribe("muri/raw")
-        //console.log('subscribed to muri/stat')
-        //console.log('subscribed to muri/raw')
 
         this.$emit('live', this.live)
     },
@@ -116,12 +112,6 @@ export default {
       this.live = false
       this.$emit('live', this.live)
     },
-    /*
-    disconnect(){
-      this.client.disconnect()
-      this.$emit('live', this.live)
-    },
-    */
     onMessageArrived(message) {
       if (message.destinationName === 'muri/stat') {
         this.message = message.payloadString
@@ -140,9 +130,9 @@ export default {
     },
     stationsListAndLastMessageTimestamps(message) {
       const messageOBJ = JSON.parse(message)
+      this.currentStation = messageOBJ['station']
 
       const result = this.stationList.has(messageOBJ['station'])
-      this.currentStation = messageOBJ['station']
       if (result) {
         // need to update stations object on every message so that the watcher hook above works
         this.stations = Array.from(this.stationList)
@@ -158,7 +148,7 @@ export default {
     },
     checkMessagePurity (message) {
       const messageOBJ = JSON.parse(message)
-      if (messageOBJ.data.frame_data === undefined){
+      if (messageOBJ.data.frame_data === undefined || messageOBJ.data.frame_data === null){
         return false
       } else {
         return true
@@ -208,13 +198,6 @@ export default {
     margin-top: 20px;
     position: relative;
   }
-  #wrapper{
-    position: relative;
-    height: 105%;
-  }
-  #conndisc{
-    margin-top: 1%;
-  }
   #live{
     position: absolute;
     top: -1.5%;
@@ -227,9 +210,6 @@ export default {
     border-radius: 50%;
     background: #E3F2FD;  /* fallback for old browsers */
   }
-  #disconnect-home {
-    z-index: 11;
-  }
   @keyframes shadow-pulse
   {
     0% {
@@ -237,6 +217,12 @@ export default {
     }
     100% {
       box-shadow: 0 0 0 15px rgba(0, 0, 0, 0);
+    }
+  }
+  /* mobile styles */
+  @media only screen and (max-width: 600px){
+    #mqtt-wrap {
+      margin-top: -0.75em;
     }
   }
 </style>
