@@ -165,7 +165,6 @@ export default {
     },
     queryReadyToMainPage (data) {
       if (data === true) {
-        console.log(data)
         this.$emit('queryReadyMain', true)
       }
     }

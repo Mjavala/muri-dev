@@ -1,6 +1,6 @@
 <template>
   <div class="map-data">
-    <l-map 
+    <l-map ref="map"
       v-bind="mapConfig"
     >
     <l-tile-layer 
@@ -37,12 +37,6 @@
         :opacity="1"
         :weight="4"
       />
-      <l-marker :lat-lng="startMarker">
-          <l-icon v-bind="iconConfigBalloon" />
-      </l-marker>
-      <l-marker :lat-lng="endMarker">
-          <l-icon v-bind="iconConfigFinish" />
-      </l-marker>
       <l-polyline
         :key="marker +'line'"
         v-for="marker in historicalMarkers"
@@ -132,9 +126,12 @@ export default {
     },
     mapArray (newVal) {
       this.historicalMarkers.push([newVal])
-      this.startMarker = L.latLng(newVal[0][0], newVal[0][1])
-      this.endMarker = L.latLng(newVal[newVal.length - 1][0], newVal[newVal.length - 1][1])
-      this.historicalDataCounter++
+      this.historicalDataCounter++ 
+      const startBound = [newVal[0][0], newVal[0][1]]
+      const endBound = [newVal[newVal.length - 1][0], newVal[newVal.length - 1][1]]
+      this.$refs.map.mapObject.fitBounds([startBound, endBound], { padding: [75, 75] });
+
+
     }
   },
   computed: {
@@ -158,8 +155,6 @@ export default {
       showLayer: true,
       urlModifier: 1,
       layerRefresher: undefined,
-      startMarker: L.latLng(40, -105),
-      endMarker: L.latLng(40, -105),
       currentAltitude: Number,
       currentPosition: {},
       currentStation: '',

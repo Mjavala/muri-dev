@@ -61,19 +61,9 @@ export default {
   #station-data {
     margin: 0 0.5em;
     transform-origin: center !important;
-    animation: wiggle 3s infinite ease-in-out forwards 4s;
   }
   #station-diagnostics {
     margin: 0 0.5em;
     transform-origin: center !important;
-    animation: wiggle 3s infinite ease-in-out forwards 2s;
-  }
-  @keyframes wiggle {
-    0% {transform: rotate(0deg);}
-    25% {transform: rotate(-0.1deg);}
-    30% {transform: rotate(-2deg);}
-    35% {transform: rotate(3deg);}
-    40% {transform: rotate(0deg);}
-    100% {transform: rotate(0deg);}
   }
 </style>

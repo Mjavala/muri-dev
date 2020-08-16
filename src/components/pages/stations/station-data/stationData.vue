@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <Loader v-if="show"></loader>
+        <Loader v-if="show" :loaderState="loaderState" />
         <NavBar :station="station" @showFeed="toggleFeed"/>
         <div id="main">
           <mqttReceiver 
@@ -48,7 +48,7 @@ export default {
   },
   data () {
     return {
-      show: false,
+      show: true,
       id: '',
       station: '',
       connectReq: false,
@@ -59,7 +59,8 @@ export default {
       feed: false,
       lastBalloonTime: undefined,
       getData: false,
-      queryDeviceId: undefined
+      queryDeviceId: undefined,
+      loaderState: false
     }
   },
   watch: {
@@ -69,9 +70,15 @@ export default {
         const lastMessageDate = new Date(newVal[0].data_time)
         const today = new Date()
 
-      if(lastMessageDate.setHours(0,0,0,0) === today.setHours(0,0,0,0)) {
-        this.getData = true
-      }
+        if(lastMessageDate.setHours(0,0,0,0) === today.setHours(0,0,0,0)) {
+          this.getData = true
+          setTimeout(() => {
+            this.loaderState = true
+          }, 500);
+        }
+        if (lastMessageDate.setHours(0,0,0,0) !== today.setHours(0,0,0,0)) {
+          this.show = false
+        }
       }
     }
   },
@@ -101,13 +108,9 @@ export default {
 
     },
     getBalloonToTrack() {
-      const messageOBJ = JSON.parse(this.stationTrackingInfoMessage)
-      const balloon = messageOBJ.tracker.track['id']
       // currently tracking first balloon in current_tracks
-      this.balloonToTrack = balloon
-      if (this.balloonToTrack === null || this.balloonToTrack === undefined) {
-        this.show = false
-      }
+      const messageOBJ = JSON.parse(this.stationTrackingInfoMessage)
+      this.balloonToTrack = messageOBJ.tracker.track['id']
     },
     toggleFeed (data) {
       this.feed = data 
