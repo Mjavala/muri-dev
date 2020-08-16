@@ -4,11 +4,15 @@ workflows:
   build-and-deploy:
     jobs:
       - build
-      - deploy-prod
+      - deploy-prod:
+
         filters:
+
           branches:
+
             only:
               - master
+              
         requires:
           -build
 version: 2.1
