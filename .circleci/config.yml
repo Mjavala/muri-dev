@@ -7,7 +7,11 @@ jobs:
       - image: circleci/node:latest
     steps:
       - checkout
-      - run: ssh -oStrictHostKeyChecking=no -v $DROPLET_USER@$DROPLET_IP ./deploy_muri_dev.sh
+      - run: ssh -oStrictHostKeyChecking=no -v $DROPLET_USER@$DROPLET_IP 
+      - run: cd /home/muri-dev
+      - run: sudo git pull
+      - run: npm install
+      - run: npm run build
 
 # Orchestrate our job run sequence
 workflows:
