@@ -12,7 +12,7 @@ workflows:
 
             only:
               - master
-              
+
         requires:
           -build
 version: 2.1
@@ -30,9 +30,8 @@ workflows:
       deploy-prod:
 
         docker:  
-        
           # specify the version you desire here (you might not want node)  
-          - image: circleci/node:12.16.2
+        - image: circleci/node:12.16.2
 
           steps:    
             - checkout    
