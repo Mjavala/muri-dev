@@ -144,4 +144,16 @@ export default {
     margin: 0 1em;
     margin-bottom: 0.75em;
   }
+  /* mobile styles */
+  @media only screen and (max-width: 600px){
+    #panel-wrap {
+        flex-direction: column;
+        font-size: 0.6em;
+        position: absolute;
+        top: 275%;
+    }
+    th {
+        width: 157px;
+    }
+  }
 </style>

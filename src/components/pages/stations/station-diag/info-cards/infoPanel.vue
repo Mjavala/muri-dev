@@ -325,16 +325,4 @@ export default {
         justify-content: center;
         align-items: center;
     }
-    /*
-    @media only screen and (min-width: 1900px) and (min-height: 1080px) {
-        #data-wrapper{
-            margin: 2em 1em;
-        }
-    }  
-    @media only screen and (min-width: 1900px) and (min-height: 1200px) {
-        #data-wrapper{
-            margin: 1em 1em;
-        }
-    }
-    */ 
 </style>

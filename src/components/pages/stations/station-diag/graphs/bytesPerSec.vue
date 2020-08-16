@@ -139,4 +139,17 @@ export default {
     height: 35%;
     z-index: 10;
   }
+  /* mobile styles */
+  @media only screen and (max-width: 600px){
+    #bytes-graph{
+      display: inline;
+      position: absolute;
+      top: 235%;
+      left: 0;
+      padding: 1em;
+      width: 90vw;
+      height: 60%;
+      z-index: 100;
+    }
+  }
 </style>
