@@ -102,23 +102,21 @@ export default {
       }
     },
     idList(newVal, oldVal){
-      if (this.historicalDataCounter > 0) {
-        if (newVal.length === oldVal.length){
-          // loop through array and find the array index that matches the 'currentDevice'
-          // update the 'markers' array L.latlng field at the given index ..
-          this.matchDeviceId()
-        }
-        if (newVal.length > oldVal.length && newVal.length > 1){
-          // new device detected, push the 'filteredMarkers' object into the 'markers' array
-          this.addMarkerToMarkerArray()
-        }
-        if (newVal.length === 1){
-          // first device, add the first marker
-          if (this.count === 0){
-            if (this.currentPosition !== undefined) {
-              this.addMarkerToMarkerArray()
-              this.count = this.count + 1
-            }
+      if (newVal.length === oldVal.length){
+        // loop through array and find the array index that matches the 'currentDevice'
+        // update the 'markers' array L.latlng field at the given index ..
+        this.matchDeviceId()
+      }
+      if (newVal.length > oldVal.length && newVal.length > 1){
+        // new device detected, push the 'filteredMarkers' object into the 'markers' array
+        this.addMarkerToMarkerArray()
+      }
+      if (newVal.length === 1){
+        // first device, add the first marker
+        if (this.count === 0){
+          if (this.currentPosition !== undefined) {
+            this.addMarkerToMarkerArray()
+            this.count = this.count + 1
           }
         }
       }

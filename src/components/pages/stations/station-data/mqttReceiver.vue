@@ -31,17 +31,9 @@ import histQuery from './histQuery'
 
 export default {
   props:
-  ['station', 'connectReq', 'disconnectReq', 'balloonToTrack', 'getData', 'queryDeviceId'],
-  mounted () {
-    try {
-      this.connect()
-    } catch {
-      console.log('!---Connect function failed ---!')
-    }
-  },
+  ['station', 'connectReq', 'disconnectReq', 'balloonToTrack', 'getData', 'queryDeviceId', 'connectMQTT'],
   watch: {
     station(newVal) {
-      console.log(newVal)
       this.stationFilter = newVal
     },
     connectReq (newVal) {
@@ -64,6 +56,16 @@ export default {
     },
     queryDeviceId (newVal) {
       this.queryDevice = newVal
+    },
+    connectMQTT (newVal) {
+      if (newVal === true && this.connectCount === 0) {
+        try {
+          this.connect()
+          this.connectCount++
+        } catch {
+          console.log('!---Connect function failed ---!')
+        }
+      }
     }
   },
   data () {
@@ -83,7 +85,8 @@ export default {
       username: 'muri',
       password: 'demo2020',
       getDataQuery: false,
-      queryDevice: undefined
+      queryDevice: undefined,
+      connectCount: 0
       
     }
   },
@@ -111,8 +114,8 @@ export default {
         // Once a connection has been made, make a subscription and send a message.
         console.log("Connected");
         this.status = true
-        this.client.subscribe("muri/raw")
-        this.client.subscribe("muri/stat")
+        this.client.subscribe("muri_test/stat")
+        this.client.subscribe("muri_test/raw")
         console.log('subscribed to muri/raw')
         console.log('subscribed to muri/stat')
     },
@@ -129,7 +132,7 @@ export default {
       this.status = false
     },
     onMessageArrived(message) {
-      if (message.destinationName === 'muri/raw'){
+      if (message.destinationName === 'muri_test/raw'){
         const check = this.checkMessagePurity(message.payloadString)
         if (check === false) {
           return
@@ -146,7 +149,7 @@ export default {
           }
         }
       }
-      if (message.destinationName === 'muri/stat'){
+      if (message.destinationName === 'muri_test/stat'){
         const messageOBJ = JSON.parse(message.payloadString)
         if (messageOBJ['station'] === this.stationFilter){
           this.last_range = (messageOBJ.tracker.track['last_range']).toFixed(2)
@@ -166,6 +169,13 @@ export default {
     queryReadyToMainPage (data) {
       if (data === true) {
         this.$emit('queryReadyMain', true)
+        setTimeout(() => {
+          try {
+            this.connect()
+          } catch {
+            console.log('!---Connect function failed ---!')
+          }
+        }, 2000);
       }
     }
   }

@@ -21,18 +21,20 @@ export default {
     },
     watch: {
       filteredBatteryMonitor(newVal){
-        if (this.historicalQueryDoneCheck > 0) {
-          let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
-          this.batt = objKeyMap[0]
-          this.addData(this.batt, 0)
+        let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
+        this.batt = objKeyMap[0]
+        if (this.chart.traces.length === 0) {
+          const date = new Date()
+          const updateTime = date.toLocaleString('en-US', { timeZone: 'America/Denver' })
+          const parsedUpdateTime = new Date(updateTime)
+          this.addTrace([parsedUpdateTime], [this.batt], [this.vbatt])
         }
+        this.addData(this.batt, 0)
       },
       filteredVentBattery(newVal){
-        if (this.historicalQueryDoneCheck > 0) {
-          let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
-          this.vbatt = objKeyMap[0]
-          this.addData(this.vbatt, 1)
-        }
+        let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
+        this.vbatt = objKeyMap[0]
+        this.addData(this.vbatt, 1)
       },
       historicalBattery (newVal) {
         this.addTrace(newVal.x, newVal.y, newVal.y2)
@@ -98,8 +100,11 @@ export default {
     },
     methods: {
       addData (point, trace) {
+        const date = new Date()
+        const updateTime = date.toLocaleString('en-US', { timeZone: 'America/Denver' })
+        const parsedUpdateTime = new Date(updateTime)
         const update = {
-          x: [[new Date()]],
+          x: [[parsedUpdateTime]],
           y: [[point]]
         }
         Plotly.extendTraces(

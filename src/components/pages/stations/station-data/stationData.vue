@@ -13,6 +13,7 @@
             :station="station"
             :getData="getData"
             :queryDeviceId="queryDeviceId"
+            :connectMQTT="connectMQTT"
             />
             <infoPanel 
               :balloonToTrack="balloonToTrack" 
@@ -60,25 +61,33 @@ export default {
       lastBalloonTime: undefined,
       getData: false,
       queryDeviceId: undefined,
-      loaderState: false
+      loaderState: false,
+      connectMQTT: false
     }
   },
   watch: {
     lastBalloonTime (newVal) {
-      if (newVal !== null || newVal !== undefined) {
-        this.queryDeviceId = newVal[0].device_id
-        const lastMessageDate = new Date(newVal[0].data_time)
-        const today = new Date()
+      if (newVal !== null && newVal !== undefined) {
+        if (newVal.length > 0) {
+          this.queryDeviceId = newVal[0].device_id
+          const lastMessageDate = new Date(newVal[0].data_time)
+          const today = new Date()
 
-        if(lastMessageDate.setHours(0,0,0,0) === today.setHours(0,0,0,0)) {
-          this.getData = true
-          setTimeout(() => {
-            this.loaderState = true
-          }, 500);
+          if(lastMessageDate.setHours(0,0,0,0) !== today.setHours(0,0,0,0)) {
+            this.getData = true
+            setTimeout(() => {
+              this.loaderState = true
+            }, 500);
+          }
+          if (lastMessageDate.setHours(0,0,0,0) === today.setHours(0,0,0,0)) {
+            this.show = false
+            this.connectMQTT = true
+          }
         }
-        if (lastMessageDate.setHours(0,0,0,0) !== today.setHours(0,0,0,0)) {
-          this.show = false
-        }
+      }
+      if (newVal.length === 0) {
+        this.show = false
+        this.connectMQTT = true
       }
     }
   },
@@ -118,6 +127,7 @@ export default {
     showLoader (data) {
       if (data === true) {
         this.show = false
+        this.connectMQTT = true
       }
     }
   }

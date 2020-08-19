@@ -21,14 +21,20 @@ export default {
     watch: {
       filteredAltitude(newVal){
         // Extend trace and data only after the historical data has been loaded on
-        if (this.historicalQueryDoneCheck > 0) {
           let objKey = Object.keys(newVal)
           this.currentDevice = objKey[0]
           let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
           let altitude = objKeyMap[0] / 1000
           this.altitude = altitude
-          this.extendTrace(this.altitude)
-        }
+          if (this.chart.traces.length === 0) {
+            const date = new Date()
+            const updateTime = date.toLocaleString('en-US', { timeZone: 'America/Denver' })
+            const parsedUpdateTime = new Date(updateTime)
+            this.addTrace([parsedUpdateTime], [this.altitude])
+          }
+          if (this.chart.traces.length > 0) {
+            this.extendTrace(this.altitude)
+          }
       },
       historicalAltitude (newVal) {
         this.addTrace(newVal.x, newVal.y)
@@ -99,8 +105,11 @@ export default {
     },
     methods: {
       extendTrace (altitude) {
+        const date = new Date()
+        const updateTime = date.toLocaleString('en-US', { timeZone: 'America/Denver' })
+        const parsedUpdateTime = new Date(updateTime)
         const update = {
-          x: [[new Date()]],
+          x: [[parsedUpdateTime]],
           y: [[altitude]]
         }
         Plotly.extendTraces(

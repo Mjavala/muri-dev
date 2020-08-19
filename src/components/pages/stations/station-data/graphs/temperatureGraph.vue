@@ -26,7 +26,15 @@ export default {
         let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
         let temp = objKeyMap[0]
         this.temp = temp
-        this.extendTrace(this.temp)
+        if (this.chart.traces.length === 0) {
+          const date = new Date()
+          const updateTime = date.toLocaleString('en-US', { timeZone: 'America/Denver' })
+          const parsedUpdateTime = new Date(updateTime)
+          this.addTrace([parsedUpdateTime], [this.temp])
+        }
+        if (this.chart.traces.length > 0) {
+          this.extendTrace(this.temp)
+        }
       },
       historicalTemp (newVal) {
         this.addTrace(newVal.x, newVal.y)
@@ -91,8 +99,11 @@ export default {
     },
     methods: {
       extendTrace (temp) {
+        const date = new Date()
+        const updateTime = date.toLocaleString('en-US', { timeZone: 'America/Denver' })
+        const parsedUpdateTime = new Date(updateTime)
         const update = {
-          x: [[new Date()]],
+          x: [[parsedUpdateTime]],
           y: [[temp]]
         }
         Plotly.extendTraces(

@@ -111,9 +111,6 @@ export default {
         this.filteredRSSI = {
             [id] : message.data['RSSI_RX']
           }
-        this.filteredTemp = {
-            [id]: message.data.frame_data['Ta2_C']
-          }
         //  need RS41 for humidity
         if (message.data['FRAME_TYPE'] === '0xd2a8') {
           this.filteredBatteryMonitor = {
@@ -121,6 +118,9 @@ export default {
           }
           this.filteredVentBattery = {
               [id]: message.data.frame_data['VENT_BATT_C']
+          }
+          this.filteredTemp = {
+              [id]: message.data.frame_data['Ta2_C']
           }
         }
         if (message.data['FRAME_TYPE'] === '0xc109') {

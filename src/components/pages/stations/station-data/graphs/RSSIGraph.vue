@@ -21,15 +21,21 @@ export default {
     },
     watch: {
       filteredRSSI (newVal) {
-        this.live === true
-        if (this.historicalQueryDoneCheck > 0) {
-          let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
-          this.rssi = objKeyMap[0]
+        this.live = true
+        let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
+        this.rssi = objKeyMap[0]
+        if (this.chart.traces.length === 0) {
+          const date = new Date()
+          const updateTime = date.toLocaleString('en-US', { timeZone: 'America/Denver' })
+          const parsedUpdateTime = new Date(updateTime)
+          this.addTrace([parsedUpdateTime], [this.rssi])
+        }
+        if (this.chart.traces.length > 1 ) {
           this.addData(this.rssi, 1)
         }
       },
       filteredRSSIStat(newVal){
-        if (this.historicalQueryDoneCheck > 0 && this.live === true) {
+        if (this.live === true) {
           let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
           this.rssiFiltered = objKeyMap[0]
           if (this.chart.traces.length > 0) {
@@ -100,8 +106,11 @@ export default {
     },
     methods: {
       addData (point, trace) {
+        const date = new Date()
+        const updateTime = date.toLocaleString('en-US', { timeZone: 'America/Denver' })
+        const parsedUpdateTime = new Date(updateTime)
         const update = {
-          x: [[new Date()]],
+          x: [[parsedUpdateTime]],
           y: [[point]]
         }
         Plotly.extendTraces(
