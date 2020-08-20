@@ -20,24 +20,28 @@ export default {
     },
     watch: {
       filteredAltitude(newVal){
-        // Extend trace and data only after the historical data has been loaded on
-          let objKey = Object.keys(newVal)
-          this.currentDevice = objKey[0]
-          let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
-          let altitude = objKeyMap[0] / 1000
-          this.altitude = altitude
-          if (this.chart.traces.length === 0) {
-            const date = new Date()
-            const updateTime = date.toLocaleString('en-US', { timeZone: 'America/Denver' })
-            const parsedUpdateTime = new Date(updateTime)
-            this.addTrace([parsedUpdateTime], [this.altitude])
-          }
-          if (this.chart.traces.length > 0) {
+      // Extend trace and data only after the historical data has been loaded on
+        let objKey = Object.keys(newVal)
+        this.currentDevice = objKey[0]
+        let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
+        let altitude = objKeyMap[0] / 1000
+        this.altitude = altitude
+        if (this.chart.traces.length === 0) {
+          const date = new Date()
+          const updateTime = date.toLocaleString('en-US', { timeZone: 'America/Denver' })
+          const parsedUpdateTime = new Date(updateTime)
+          this.addTrace([parsedUpdateTime], [this.altitude])
+        }
+        if (this.chart.traces.length > 0) {
+          this.$nextTick(() => {
             this.extendTrace(this.altitude)
-          }
+          })
+        }
       },
       historicalAltitude (newVal) {
-        this.addTrace(newVal.x, newVal.y)
+        const xVals = newVal.x
+        const yVals = newVal.y
+        this.addTrace(xVals, yVals)
         this.historicalQueryDoneCheck++
         this.timer = new Date() // start 30 min live clock
       }
@@ -108,10 +112,13 @@ export default {
         const date = new Date()
         const updateTime = date.toLocaleString('en-US', { timeZone: 'America/Denver' })
         const parsedUpdateTime = new Date(updateTime)
-        const update = {
+        this.chart.traces[0].x.push(parsedUpdateTime)
+        this.chart.traces[0].y.push(altitude)
+        let update = {
           x: [[parsedUpdateTime]],
           y: [[altitude]]
         }
+        console.log(update)
         Plotly.extendTraces(
           'altitude-graph',
           update,

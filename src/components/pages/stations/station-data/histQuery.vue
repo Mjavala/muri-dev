@@ -45,13 +45,13 @@ export default {
     },
     data_payload () {
       for (var i = 0, len = this.data_payload.length; i < len; i++) {
-          this.timeArray.push(this.data_payload[i].data_time)
-          this.batteryMonitorArray.push(this.data_payload[i].batt_mon)
-          this.ventBattArray.push(this.data_payload[i].vent_batt)
-          this.coordinateArray.push([this.data_payload[i].latitude, this.data_payload[i].longitude])
-          this.altitudeArray.push(this.data_payload[i].altitude)
-          this.temperatureArray.push(this.data_payload[i].temperature)
-          this.rssiArray.push(this.data_payload[i].rssi)
+        this.timeArray.push(this.data_payload[i].data_time)
+        this.batteryMonitorArray.push(this.data_payload[i].batt_mon)
+        this.ventBattArray.push(this.data_payload[i].vent_batt)
+        this.coordinateArray.push([this.data_payload[i].latitude, this.data_payload[i].longitude])
+        this.altitudeArray.push(this.data_payload[i].altitude)
+        this.temperatureArray.push(this.data_payload[i].temperature)
+        this.rssiArray.push(this.data_payload[i].rssi)
       }
       this.packageDataForGraphs()
     },
