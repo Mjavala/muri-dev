@@ -21,38 +21,47 @@ export default {
     watch: {
       filteredAltitude(newVal){
         // Extend trace and data only after the historical data has been loaded on
+        if (this.historicalDataQuery > 0) {
           let objKey = Object.keys(newVal)
           this.currentDevice = objKey[0]
           let objKeyMap = Object.keys(newVal).map((k) => newVal[k]);
           let altitude = objKeyMap[0] / 1000
           this.altitude = altitude
+          /*
           if (this.chart.traces.length === 0) {
             const date = new Date()
             const updateTime = date.toLocaleString('en-US', { timeZone: 'America/Denver' })
-            const parsedUpdateTime = new Date(updateTime)
-            this.addTrace([parsedUpdateTime], [this.altitude])
+            //const parsedUpdateTime = new Date(updateTime)
+            //this.addTrace([parsedUpdateTime], [this.altitude])
           }
+          */
           if (this.chart.traces.length > 0) {
             this.extendTrace(this.altitude)
           }
+        }
       },
       historicalAltitude (newVal) {
-        this.addTrace(newVal.x, newVal.y)
-        this.historicalQueryDoneCheck++
+        this.xArray =  newVal.x
+        this.yArray = newVal.y
+        this.historicalDataQuery++
+        this.addTrace(this.xArray, this.yArray)
         this.timer = new Date() // start 30 min live clock
       }
     },
     data() {
     return {
-      altitude: Number,
+      altitude: undefined,
       currentDevice: '',
       throttleCount: 0,
-      historicalQueryDoneCheck: 0,
       timer: undefined,
+      historicalDataQuery: 0,
+      xArray: undefined,
+      yArray: undefined,
       counter: 0,
       count: 0,
+      testCount: 0,
       chart: {
-        uuid: "123",
+        uuid: "1123",
         traces: [],
         layout: {
           plot_bgcolor: '#F5F5F5',
@@ -106,17 +115,20 @@ export default {
     methods: {
       extendTrace (altitude) {
         const date = new Date()
-        const updateTime = date.toLocaleString('en-US', { timeZone: 'America/Denver' })
-        const parsedUpdateTime = new Date(updateTime)
-        const update = {
-          x: [[parsedUpdateTime]],
-          y: [[altitude]]
-        }
-        Plotly.extendTraces(
-          'altitude-graph',
-          update,
-          [0],
-        )
+        //const updateTime = date.toLocaleString('en-US', { timeZone: 'America/Denver' })
+        //const parsedUpdateTime = new Date(updateTime)
+        //this.chart.traces[0].x.push(parsedUpdateTime)
+        //this.chart.traces[0].y.push(altitude)
+          const update = {
+          y: [[altitude]],
+          x: [[date]]
+          }
+          Plotly.extendTraces(
+            'altitude-graph',
+            update,
+            [0]
+          )
+        //Plotly.restyle('altitude-graph', update, 0)
         const newTime = new Date()
         const delta =  (newTime - this.timer) / 1000
         if (delta >= 1800) {
@@ -125,13 +137,13 @@ export default {
           this.chart.traces[0].x.shift()
         }
       },
-      addTrace (x, y) {
+      addTrace (xVal, yVal) {
         const traceObj = {
-            y: y,
-            x: x,
+            y: yVal.reverse(),
+            x: xVal.reverse(),
             type: 'scattergl',
             mode: 'lines',
-            connectgaps: true,
+            connectgaps: false,
         }
         this.chart.traces.push(traceObj)
         let config = {displayModeBar: false, responsive: true}

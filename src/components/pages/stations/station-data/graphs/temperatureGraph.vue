@@ -121,8 +121,8 @@ export default {
       },
       addTrace (x, y) {
         const traceObj = {
-            y: y,
-            x: x,
+            y: y.reverse(),
+            x: x.reverse(),
             type: 'scattergl',
             mode: 'lines',
             connectgaps: true,
