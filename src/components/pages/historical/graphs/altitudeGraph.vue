@@ -12,7 +12,8 @@ export default {
     },
     watch: {
         altitudeGraphObject(newVal) {
-            this.addTrace(newVal.x, newVal.y)
+          console.log(newVal.x.length)
+          this.addTrace(newVal.x, newVal.y)
         }
     },
     data() {

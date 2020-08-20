@@ -70,32 +70,24 @@ export default {
     LGeoJson,
     'l-wms-tile-layer': LWMSTileLayer
   },
-  async created () {
+  created () {
 
 // GET Datestring for today's file
     const date = new Date();
     const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' }) 
-    const [{ value: month },,{ value: day },,{ value: year }] = dateTimeFormat.formatToParts(date) 
+    const [{ value: month },,{ value: day },,{ value: year }] = dateTimeFormat .formatToParts(date ) 
 
-    var fName = `https://irisslive.net/bts/AUTO_JSON/MARS_${year }${month}${day}_1400.json`;
+    var fName = `https://irisslive.net/bts/AUTO_JSON/MARS_${year}${month}${day}_1400.json`;
 
-    console.log("Attempint to load prediction: " + fName);
+
 
     //const fName = 'https://irisslive.net/bts/AUTO_JSON/TODAY.geojson'
-    const response = await fetch(fName, {
+    fetch(fName, {
       mode: 'no-cors' // 'cors' by default
-    });
-    var thisTXT= await response.text();
-
-    var lines = thisTXT.split("\n");
-
-    console.log("Prediction Fetch Complete." );
-    console.log(lines[0]);
-
-    //console.log('GOT: ' + thisJSON);
-    this.geojson = JSON.parse(lines[1]);
-    
-  },
+    }).then( response => {
+      response.text()
+      console.log(response.text())
+      }).then(thisTXT => console.log(thisTXT))},
 
   mounted () {
     document.addEventListener('click', (e) => {

@@ -57,6 +57,7 @@ export default {
         this.markers = newVal
         this.startMarker = L.latLng(newVal[0][0], newVal[0][1])
         this.endMarker = L.latLng(newVal[newVal.length - 1][0], newVal[newVal.length - 1][1])
+        console.log(this.startMarker, this.endMarker)
         //let midpoint = this.markers[Math.round((this.markers.length -1) / 2)]
         /*if (this.markers.length < 600) {
           this.mapConfig.zoom = 10
