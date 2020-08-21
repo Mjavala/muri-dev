@@ -46,6 +46,7 @@ export default {
         this.temperatureArray.push(this.data_payload[i].temperature)
         this.rssiArray.push(this.data_payload[i].rssi)
       }
+      console.log(this.rssiArray.length, this.timeArray.length,this.mapArray.length)
       this.packageDataForGraphs()
     },
     altitudeArray (newVal) {
