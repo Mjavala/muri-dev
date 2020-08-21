@@ -114,8 +114,8 @@ export default {
         // Once a connection has been made, make a subscription and send a message.
         console.log("Connected");
         this.status = true
-        this.client.subscribe("muri_test/stat")
-        this.client.subscribe("muri_test/raw")
+        this.client.subscribe("muri/stat")
+        this.client.subscribe("muri/raw")
         console.log('subscribed to muri/raw')
         console.log('subscribed to muri/stat')
     },
@@ -132,7 +132,7 @@ export default {
       this.status = false
     },
     onMessageArrived(message) {
-      if (message.destinationName === 'muri_test/raw'){
+      if (message.destinationName === 'muri/raw'){
         const check = this.checkMessagePurity(message.payloadString)
         if (check === false) {
           return
@@ -149,7 +149,7 @@ export default {
           }
         }
       }
-      if (message.destinationName === 'muri_test/stat'){
+      if (message.destinationName === 'muri/stat'){
         const messageOBJ = JSON.parse(message.payloadString)
         if (messageOBJ['station'] === this.stationFilter){
           this.last_range = (messageOBJ.tracker.track['last_range']).toFixed(2)
