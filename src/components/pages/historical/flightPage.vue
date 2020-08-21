@@ -102,7 +102,7 @@ export default {
       this.show = true
       this.$apollo.query({
         query: gql` query data_payload($xbeeId: String!, $stationId: String!){
-          device_data(where: {device_id: {_eq: $xbeeId}, station_id: {_eq: $stationId}}) {
+          device_data(order_by: {data_time: asc}, where: {device_id: {_eq: $xbeeId}, station_id: {_eq: $stationId}}) {
             batt_mon
             temperature
             vent_batt

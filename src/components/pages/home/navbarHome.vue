@@ -14,25 +14,25 @@
         </div>
         <v-spacer />
           <v-btn  id="bts" light small>
-            <a href="https://irisslive.net/bts/bts_main.html" target="_blank">BTS (Trajectory Simulator)</a>
+            <a class="links" href="https://irisslive.net/bts/bts_main.html" target="_blank">BTS (Trajectory Simulator)</a>
           </v-btn>
           <v-btn id="station-diagnostics" light small v-if="showStationRedirect">
             <!-- router link - https://router.vuejs.org/api/ -->
-              <router-link :to="{name: 'stationDiagnostics', params: { id: this.stationRedirect }}">
+              <router-link class="links" :to="{name: 'stationDiagnostics', params: { id: this.stationRedirect }}">
                   Station Diagnostics
               </router-link>
           </v-btn>
           <v-btn  id="station-data" light small v-if="showStationRedirect">
-              <router-link :to="{name: 'station', params: { id: this.stationRedirect }}">
+              <router-link class="links" :to="{name: 'station', params: { id: this.stationRedirect }}">
                   Station Data
               </router-link>
           </v-btn>
           <v-btn  id="dgrs-logs" light small>
             <!-- v-list-item - https://vuetifyjs.com/en/components/lists/ -->
-            <a href="http://159.89.152.16/logs/" target="_blank">DGRS Log Files</a>
+            <a class="links" href="http://159.89.152.16/logs/" target="_blank">DGRS Log Files</a>
           </v-btn>
           <v-btn  id="station-data" light small>
-            <router-link to="/muri/historical" target="_blank">Historical Data</router-link>
+            <router-link class="links" to="/muri/historical" target="_blank">Historical Data</router-link>
           </v-btn>
       </v-app-bar>
       <navBarMobile :station="station" class="hidden-sm-and-up" />
@@ -83,10 +83,11 @@ export default {
     z-index: 1000;
     background-color: white;
   }
-  a {
+  .links {
     color: black !important;
     text-decoration: none;
   }
+
   #live-icon {
     margin-top: 25%;
   }

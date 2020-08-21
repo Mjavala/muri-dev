@@ -20,6 +20,15 @@
                 v-model="station"
             ></v-select>
             <p class="hidden-xs-only"><i>Note: simulation from today at 1400 will be displayed if available. </i></p>
+            <HR />
+
+            <B>Quick Links:</B><BR /><LI><B>BARN 1: </B><A HREF="muri_live/#/muri/station/data&BARN1">Station Data</A> | <A HREF="muri_live/#/muri/station/diagnostics&BARN1">Station Diagnostics</A></LI>
+
+            <p><B>Recent Data Summary Links:</B><BR /></p>
+                <LI><A HREF="/muri_live/#/muri/historical&2020-08-18%20xbee_0013A20041B48697&BARN1">COLORADO - 08/18/2020 - BARN1</A></LI>
+
+            <v-img class="hyflits" max-height="50" max-width="200" src="../../../assets/hyflits.png" />
+
         </div>
     </div>
     </v-app>
@@ -100,6 +109,9 @@ export default {
         color: #2c3e50;
         font-size: 1em;
         font-weight: 600;
+    }
+    .hyflits {
+        margin: 0.5em;
     }
     /* mobile styles */
     @media only screen and (max-width: 600px){

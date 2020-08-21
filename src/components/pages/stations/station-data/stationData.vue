@@ -66,8 +66,7 @@ export default {
     }
   },
   watch: {
-    lastBalloonTime () {
-      /*
+    lastBalloonTime (newVal) {
       if (newVal !== null && newVal !== undefined) {
         if (newVal.length > 0) {
           this.queryDeviceId = newVal[0].device_id
@@ -75,7 +74,7 @@ export default {
           const today = new Date()
 
           if(lastMessageDate.setHours(0,0,0,0) !== today.setHours(0,0,0,0)) {
-            //this.getData = true
+            this.getData = true
             setTimeout(() => {
               this.loaderState = true
             }, 500);
@@ -90,10 +89,6 @@ export default {
         this.show = false
         this.connectMQTT = true
       }
-      */
-      // for temp IL version
-      this.show = false
-      this.connectMQTT = true
     }
   },
   mounted () {

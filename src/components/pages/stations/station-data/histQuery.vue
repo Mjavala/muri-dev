@@ -122,7 +122,7 @@ export default {
       if (balloon !== null && station !== null) {
         this.$apollo.query({
           query: gql` query data_payload($balloon: String!, $station: String!){
-            device_data_aggregate(limit: 500, order_by: {data_time: desc}, where: {device_id: {_eq: $balloon}, _and: {station_id: {_eq: $station}}}) {
+            device_data_aggregate(limit: 500, order_by: {data_time: asc}, where: {device_id: {_eq: $balloon}, _and: {station_id: {_eq: $station}}}) {
               nodes {
                 batt_mon
                 temperature
