@@ -114,6 +114,9 @@ export default {
     },
     methods: {
       extendTrace (altitude) {
+
+        let gd = document.getElementById('altitude-graph')
+        let trace = gd.data[0]
         const date = new Date()
         //const updateTime = date.toLocaleString('en-US', { timeZone: 'America/Denver' })
         //const parsedUpdateTime = new Date(updateTime)
@@ -135,6 +138,12 @@ export default {
           // 30 minute timeframe reached, need to remove first element of array as new one gets added
           this.chart.traces[0].y.shift()
           this.chart.traces[0].x.shift()
+        }
+        console.log(this.chart.traces[0].x.length)
+        if (this.testCount === 0) {
+          console.log(trace.x, trace.y)
+          console.log(trace.x[trace.x.length - 1], trace.y[trace.y.length - 1])
+          this.testCount++
         }
       },
       addTrace (xVal, yVal) {
