@@ -24,10 +24,13 @@
 
             <B>Quick Links:</B><BR /><LI><B>BARN 1: </B><A HREF="muri_live/#/muri/station/data&BARN1">Station Data</A> | <A HREF="muri_live/#/muri/station/diagnostics&BARN1">Station Diagnostics</A></LI>
 
-            <p><B>Recent Data Summary Links:</B><BR /></p>
+            <p><B>Recent Data Summary Links: (Not auto-generated)</B><BR /></p>
                 <LI><A HREF="/muri_live/#/muri/historical&2020-08-18%20xbee_0013A20041B48697&BARN1">COLORADO - 08/18/2020 - BARN1</A></LI>
-
-            <v-img class="hyflits" max-height="50" max-width="200" src="../../../assets/hyflits.png" />
+                <LI><A HREF="https://irisslive.net/muri_live/#/muri/historical&2020-08-11%20xbee_0013A20041B48697&BARN1">COLORADO - 08/11/2020 - BARN1</A></LI>
+                <LI><A HREF="https://irisslive.net/muri_live/#/muri/historical&2020-08-07%20xbee_0013A20041B48675&BARN1">COLORADO - 08/7/2020 - BARN1</A></LI>
+                <LI><A HREF="https://irisslive.net/muri_live/#/muri/historical&2020-08-04%20xbee_0013A20041B84784&BARN1">COLORADO - 08/4/2020 - BARN1</A></LI>
+                <LI><A HREF="https://irisslive.net/muri_live/#/muri/historical&2020-07-28%20xbee_0013A20041B47D7E&BARN1">COLORADO - 07/28/2020 - BARN1</A></LI>
+                <LI><A HREF="https://irisslive.net/muri_live/#/muri/historical&2020-07-21%20xbee_0013A20041B847AB&BARN1">COLORADO - 07/21/2020 - BARN1</A></LI>
 
         </div>
     </div>

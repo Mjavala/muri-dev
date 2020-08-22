@@ -1,8 +1,9 @@
 <template>
     <!-- v-app-bar - https://vuetifyjs.com/en/components/app-bars/ -->
     <div>
-      <v-app-bar app flat id="nav" class="hidden-xs-only">
-        <v-img id="iriss-logo" max-height="50" max-width="200" src="../../../assets/iriss_logo.jpg" />
+      <v-app-bar app flat id="nav" height=100 class="hidden-xs-only">
+        <v-img id="iriss-logo" class="responsive-img" max-height="80" max-width="200" src="../../../assets/iriss_logo.jpg" />
+        <v-img id="iriss-logo" class="responsive-img" max-height="80" max-width="200" src="../../../assets/hyflits_home.png" />
         <!-- v-btn - https://vuetifyjs.com/en/components/buttons/ -->
         <v-btn icon depressed rounded id="live" v-if="mqttConnected">
           <!-- v-icon - https://vuetifyjs.com/en/components/icons/  -->
@@ -109,5 +110,9 @@ export default {
   }
   .smallTitle {
     font-size: 1.5em;
+  }
+  .responsive-img {
+    width: 15vw;
+    margin: 0.25em;
   }
 </style>

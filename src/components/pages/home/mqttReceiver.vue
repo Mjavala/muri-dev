@@ -198,13 +198,6 @@ export default {
     margin-top: 20px;
     position: relative;
   }
-  #live{
-    position: absolute;
-    top: -1.5%;
-    left: 18em;
-    z-index: 1001;
-    background: transparent;
-  }
   #live-icon{
     animation: shadow-pulse 3s infinite;
     border-radius: 50%;

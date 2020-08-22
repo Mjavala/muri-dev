@@ -260,7 +260,6 @@ export default {
     pushPolylineArray (i) {
       const start = L.latLng(this.currentPosition.lat, this.currentPosition.lng)
       const end = this.calculatePolylineEndpoint(this.currentPosition, this.currentAzimuth)
-      console.log(i)
       this.markers[i].polylines = [start, end]
     },
     calculatePolylineEndpoint(start, azimuth) {
