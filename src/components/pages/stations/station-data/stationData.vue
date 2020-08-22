@@ -73,13 +73,13 @@ export default {
           const lastMessageDate = new Date(newVal[0].data_time)
           const today = new Date()
 
-          if(lastMessageDate.setHours(0,0,0,0) !== today.setHours(0,0,0,0)) {
+          if(lastMessageDate.setHours(0,0,0,0) === today.setHours(0,0,0,0)) {
             this.getData = true
             setTimeout(() => {
               this.loaderState = true
             }, 500);
           }
-          if (lastMessageDate.setHours(0,0,0,0) === today.setHours(0,0,0,0)) {
+          if (lastMessageDate.setHours(0,0,0,0) !== today.setHours(0,0,0,0)) {
             this.show = false
             this.connectMQTT = true
           }

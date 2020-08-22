@@ -6,7 +6,7 @@
     <l-tile-layer 
       v-bind="mapRender"
     />
-    <l-marker
+    <l-marker 
         :key="marker.id"
         v-for="marker in markersBalloon"
         :lat-lng="marker.latlng"
@@ -70,25 +70,6 @@ export default {
     LGeoJson,
     'l-wms-tile-layer': LWMSTileLayer
   },
-  created () {
-
-// GET Datestring for today's file
-    const date = new Date();
-    const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' }) 
-    const [{ value: month },,{ value: day },,{ value: year }] = dateTimeFormat .formatToParts(date ) 
-
-    var fName = `https://irisslive.net/bts/AUTO_JSON/MARS_${year}${month}${day}_1400.json`;
-
-
-
-    //const fName = 'https://irisslive.net/bts/AUTO_JSON/TODAY.geojson'
-    fetch(fName, {
-      mode: 'no-cors' // 'cors' by default
-    }).then( response => {
-      response.text()
-      console.log(response.text())
-      }).then(thisTXT => console.log(thisTXT))},
-
   mounted () {
     document.addEventListener('click', (e) => {
       for (const [i, markersObj] of this.markers.entries()) {
@@ -129,7 +110,7 @@ export default {
       if (newVal.length === oldVal.length){
         // loop through array and find the array index that matches the 'currentDevice'
         // update the 'markers' array L.latlng field at the given index
-        this.updateData('marker')
+        this.updateData('station')
       }
       if (newVal.length > oldVal.length && newVal.length > 1){
         // new device detected, push the 'filteredMarkers' object into the 'markers' array
@@ -260,6 +241,7 @@ export default {
         }
         if (type === 'azimuth') {
           if (this.currentStationAzimuth === markersObj.id) {
+            console.log(this.currentStationAzimuth, markersObj.id, i)
             this.pushPolylineArray(i)
           }
         }
@@ -278,6 +260,7 @@ export default {
     pushPolylineArray (i) {
       const start = L.latLng(this.currentPosition.lat, this.currentPosition.lng)
       const end = this.calculatePolylineEndpoint(this.currentPosition, this.currentAzimuth)
+      console.log(i)
       this.markers[i].polylines = [start, end]
     },
     calculatePolylineEndpoint(start, azimuth) {
