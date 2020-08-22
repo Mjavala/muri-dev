@@ -225,38 +225,39 @@ export default {
         },
         stationTrackingInfoMessage (newVal) {
             const statMessage = JSON.parse(newVal)
-            this.last_range = (statMessage.tracker.track['last_range']).toFixed(4)
-            this.last_azm = ((statMessage.tracker.track['last_azm']).toFixed(4) + '°')
-            this.last_elv = ((statMessage.tracker.track['last_elv']).toFixed(4) + '°')
-            this.el_pending = statMessage.tracker.track['el_pending']
-            this.az_pending = statMessage.tracker.track['az_pending']
-            this.track_status = statMessage.tracker.track['status']
-            this.id = statMessage.tracker.track['id']
-            const last_update = new Date(statMessage.tracker.track['last_update'] * 1000)
+            //  this.last_range = (statMessage.tracker.track['last_range']).toFixed(4)
+            //  this.last_azm = ((statMessage.tracker.track['last_azm']).toFixed(4) + '°')
+            //  this.last_elv = ((statMessage.tracker.track['last_elv']).toFixed(4) + '°')
+            //  this.el_pending = statMessage.tracker.track['el_pending']
+            //  this.az_pending = statMessage.tracker.track['az_pending']
+            //  this.track_status = statMessage.tracker.track['status']
+            //  this.id = statMessage.tracker.track['id']
+            /* const last_update = new Date(statMessage.tracker.track['last_update'] * 1000)
             const month = last_update.getMonth() + 1
             const day = last_update.getDate()
-            const hours = last_update.getHours()
+            const hours = lastdw_update.getHours()
             const minutes = last_update.getMinutes()
             const seconds = last_update.getSeconds()
             this.last_update = `${month}:${day}: ${hours}:${minutes}:${seconds}`
-            this.azm = ((statMessage.tracker.ant['azm']).toFixed(2) + '°')
-            this.elv = ((statMessage.tracker.ant['elv']).toFixed(2) + '°')
+            */
+            //this.azm = ((statMessage.tracker.ant['azm']).toFixed(2) + '°')
+            //this.elv = ((statMessage.tracker.ant['elv']).toFixed(2) + '°')
             this.status = statMessage.tracker.ant['status']
-            this.req_azm = (statMessage.tracker.ant['req_azm'] + '°')
-            this.req_elv = (statMessage.tracker.ant['req_elv'] + '°')
+            //this.req_azm = (statMessage.tracker.ant['req_azm'] + '°')
+            //this.req_elv = (statMessage.tracker.ant['req_elv'] + '°')
             // !-- this.rssi --! //
-            this.gps_lat = ((statMessage.tracker.gps['gps_lat']).toFixed(4) + '°')
-            this.gps_lon = ((statMessage.tracker.gps['gps_lon']).toFixed(4) + '°')
-            this.gps_alt = (statMessage.tracker.gps['gps_alt'] + ' m')
-            this.gps_numsats = statMessage.tracker.gps['gps_numsats']
+            //this.gps_lat = ((statMessage.tracker.gps['gps_lat']).toFixed(4) + '°')
+            //this.gps_lon = ((statMessage.tracker.gps['gps_lon']).toFixed(4) + '°')
+            //this.gps_alt = (statMessage.tracker.gps['gps_alt'] + ' m')
+            //this.gps_numsats = statMessage.tracker.gps['gps_numsats']
             // !-- last field --! //
-            this.par_bytes = statMessage.receiver_1.last['par_bytes']
-            this.period_secs = (statMessage.receiver_1.last['period_secs']).toFixed(6)
-            this.avg_bytes_sec = (statMessage.receiver_1.last['avg_byte_sec']).toFixed(6)
-            this.tot_bytes = statMessage.receiver_1.last['tot_bytes']
-            this.mqtt_out = statMessage.receiver_1.last['msg_out_queue']
-            this.rssi_filtered = statMessage.receiver_1.last.rssi_last['rssi']
-            this.secs_ago = (statMessage.receiver_1.last.rssi_last['secs_ago']).toFixed(4)
+            //this.par_bytes = statMessage.receiver_1.last['par_bytes']
+            //this.period_secs = (statMessage.receiver_1.last['period_secs']).toFixed(6)
+            //this.avg_bytes_sec = (statMessage.receiver_1.last['avg_byte_sec']).toFixed(6)
+            //this.tot_bytes = statMessage.receiver_1.last['tot_bytes']
+            //this.mqtt_out = statMessage.receiver_1.last['msg_out_queue']
+            //this.rssi_filtered = statMessage.receiver_1.last.rssi_last['rssi']
+            //this.secs_ago = (statMessage.receiver_1.last.rssi_last['secs_ago']).toFixed(4)
 
             const allKeys = Object.keys(statMessage.receiver_1.all)
             const allValues = Object.keys(statMessage.receiver_1.all).map((k) => statMessage.receiver_1.all[k])
@@ -289,6 +290,108 @@ export default {
                     this.radios.push(radioReceived)
                 }
             }
+
+            this.stationMessageDecode(statMessage)
+
+        }
+    },
+    methods: {
+        stationMessageDecode (payload) {
+            //const message = JSON.parse(payload)
+            const flatPayload = this.flattenMessageTree(payload)
+
+            for (let i in flatPayload) {
+                if (i === 'last_range') {
+                    this.last_range = flatPayload[i]
+                }
+                if (i === 'last_azm') {
+                    this.last_azm = flatPayload[i]
+                }
+                if (i === 'last_elv') {
+                    this.last_elv = flatPayload[i]
+                }
+                if (i === 'el_pending') {
+                    this.el_pending = flatPayload[i]
+                }
+                if (i === 'az_pending') {
+                    this.az_pending = flatPayload[i]
+                }
+                if (i === 'status') {
+                    this.track_status = flatPayload[i]
+                }
+                if (i === 'id') {
+                    this.id = flatPayload[i]
+                }
+                if (i === 'last_update') {
+                    const last_update = new Date(flatPayload[i] * 1000)
+                    const month = last_update.getMonth() + 1
+                    const day = last_update.getDate()
+                    const hours = last_update.getHours()
+                    const minutes = last_update.getMinutes()
+                    const seconds = last_update.getSeconds()
+
+                    this.last_update = `${month}:${day}: ${hours}:${minutes}:${seconds}`
+                }
+                if (i === 'azm') {
+                    this.azm = flatPayload[i]
+                }
+                if (i === 'elv') {
+                    this.elv = flatPayload[i]
+                }
+                if (i === 'req_azm') {
+                    this.req_azm = flatPayload[i]
+                }
+                if (i === 'req_elv') {
+                    this.req_elv = flatPayload[i]
+                }
+                if (i === 'gps_lat') {
+                    this.gps_lat = flatPayload[i]
+                }
+                if (i === 'gps_lon') {
+                    this.gps_lon = flatPayload[i]
+                }
+                if (i === 'gps_alt') {
+                    this.gps_alt = flatPayload[i]
+                }
+                if (i === 'gps_alt') {
+                    this.gps_alt = flatPayload[i]
+                }
+                if (i === 'gps_numsats') {
+                    this.gps_numsats = flatPayload[i]
+                }
+                if (i === 'par_bytes') {
+                    this.par_bytes = flatPayload[i]
+                }
+                if (i === 'period_secs') {
+                    this.period_secs = flatPayload[i]
+                }
+                if (i === 'avg_bytes_sec') {
+                    this.avg_bytes_sec = flatPayload[i]
+                }
+                if (i === 'tot_bytes') {
+                    this.tot_bytes = flatPayload[i]
+                }
+                if (i === 'msg_out_queue') {
+                    this.mqtt_out = flatPayload[i]
+                }
+                if (i === 'rssi') {
+                    this.rssi_filtered = flatPayload[i]
+                }
+                if (i === 'secs_ago') {
+                    this.secs_ago = flatPayload[i]
+                }
+            }
+        },
+        flattenMessageTree(obj) {
+            const flattened = {}
+            Object.keys(obj).forEach((key) => {
+                if (typeof obj[key] === 'object' && obj[key] !== null) {
+                    Object.assign(flattened, this.flattenMessageTree(obj[key]))
+                } else {
+                    flattened[key] = obj[key]
+                }
+            })
+            return flattened
         }
     }
 }
