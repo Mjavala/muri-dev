@@ -154,7 +154,7 @@ export default {
     dateQuery (xbeeId) {
       this.$apollo.query({
         query: gql` query data_payload($xbeeId: String!){
-          device_data(limit: 1, where: {device_id: {_eq: $xbeeId}}) {
+          device_data(limit: 1, where: {device_id: {_eq: $xbeeId}}, order_by: {data_time: desc}) {
             data_time
           }
         }`,

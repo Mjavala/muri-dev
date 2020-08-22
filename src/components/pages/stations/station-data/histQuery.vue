@@ -102,27 +102,27 @@ export default {
     packageDataForGraphs () {
       this.altitudeGraphObject = {
           y: this.altitudeArray,
-          x: this.timeArray
+          x: this.timeArray.reverse()
       }
       this.rssiGraphObject = {
           y: this.rssiArray,
-          x: this.timeArray
+          x: this.timeArray.reverse()
       }
       this.tempGraphObject = {
           y: this.temperatureArray,
-          x: this.timeArray
+          x: this.timeArray.reverse()
       },
       this.battGraphObject = {
           y: this.batteryMonitorArray,
           y2: this.ventBattArray,
-          x: this.timeArray
+          x: this.timeArray.reverse()
       }
     },
     getHistoricalData (balloon, station) {
       if (balloon !== null && station !== null) {
         this.$apollo.query({
           query: gql` query data_payload($balloon: String!, $station: String!){
-            device_data_aggregate(limit: 500, order_by: {data_time: asc}, where: {device_id: {_eq: $balloon}, _and: {station_id: {_eq: $station}}}) {
+            device_data_aggregate(limit: 1000, order_by: {data_time: desc}, where: {device_id: {_eq: $balloon}, _and: {station_id: {_eq: $station}}}) {
               nodes {
                 batt_mon
                 temperature
