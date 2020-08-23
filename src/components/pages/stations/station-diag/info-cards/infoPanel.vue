@@ -297,10 +297,8 @@ export default {
     },
     methods: {
         stationMessageDecode (payload) {
-            console.log(payload)
             //const message = JSON.parse(payload)
             const flatPayload = this.flattenMessageTree(payload)
-            console.log(flatPayload)
 
             for (let i in flatPayload) {
                 if (i === 'last_range') {
@@ -388,7 +386,12 @@ export default {
             const flattened = {}
             Object.keys(obj).forEach((key) => {
                 if (typeof obj[key] === 'object' && obj[key] !== null) {
-                    Object.assign(flattened, this.flattenMessageTree(obj[key]))
+                    console.log(obj, obj[key], key)
+                    if (key === 'all') {
+                        console.log('nothing to see here')
+                    } else if ( key !== 'all') {
+                        Object.assign(flattened, this.flattenMessageTree(obj[key]))
+                    }
                 } else {
                     flattened[key] = obj[key]
                 }
