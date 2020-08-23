@@ -297,8 +297,10 @@ export default {
     },
     methods: {
         stationMessageDecode (payload) {
+            console.log(payload)
             //const message = JSON.parse(payload)
             const flatPayload = this.flattenMessageTree(payload)
+            console.log(flatPayload)
 
             for (let i in flatPayload) {
                 if (i === 'last_range') {
@@ -365,7 +367,7 @@ export default {
                 if (i === 'period_secs') {
                     this.period_secs = flatPayload[i]
                 }
-                if (i === 'avg_bytes_sec') {
+                if (i === 'avg_byte_sec') {
                     this.avg_bytes_sec = flatPayload[i]
                 }
                 if (i === 'tot_bytes') {

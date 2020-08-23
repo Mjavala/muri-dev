@@ -100,8 +100,8 @@ export default {
     },
     onConnect(){
         this.live = true
-        this.client.subscribe("muri/stat")
-        this.client.subscribe("muri/raw")
+        this.client.subscribe("muri_test/stat")
+        this.client.subscribe("muri_test/raw")
 
         this.$emit('live', this.live)
     },
@@ -113,11 +113,11 @@ export default {
       this.$emit('live', this.live)
     },
     onMessageArrived(message) {
-      if (message.destinationName === 'muri/stat') {
+      if (message.destinationName === 'muri_test/stat') {
         this.message = message.payloadString
         this.stationsListAndLastMessageTimestamps(this.message)
       }
-      if (message.destinationName === 'muri/raw'){
+      if (message.destinationName === 'muri_test/raw'){
         // payloads may come in corrupted
         const check = this.checkMessagePurity(message.payloadString)
         if (check === false) {
