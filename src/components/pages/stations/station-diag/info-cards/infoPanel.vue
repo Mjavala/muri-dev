@@ -207,7 +207,10 @@ export default {
         },
         balloonInfoMessage (newVal) {
             const messageOBJ = JSON.parse(newVal)
+            // Must have ADDR_FROM key
             if (messageOBJ.data['ADDR_FROM'] === this.current_balloon) {
+                this.balloonMessageDecode(messageOBJ)
+                /*
                 // both frame types 
                 this.lat = ((messageOBJ.data.frame_data['gps_lat'] / 10000000).toFixed(4) + '°')
                 this.lon = ((messageOBJ.data.frame_data['gps_lon'] / 10000000).toFixed(4) + '°')
@@ -221,6 +224,7 @@ export default {
                     this.vely = (messageOBJ.data.frame_data['gps_vele_C']).toFixed(3) + ' m/s'
                     this.velz = (messageOBJ.data.frame_data['gps_veld_C']).toFixed(3) + ' m/s'
                 }
+                */
             }
         },
         stationTrackingInfoMessage (newVal) {
@@ -232,16 +236,20 @@ export default {
             //  this.az_pending = statMessage.tracker.track['az_pending']
             //  this.track_status = statMessage.tracker.track['status']
             //  this.id = statMessage.tracker.track['id']
-            /* const last_update = new Date(statMessage.tracker.track['last_update'] * 1000)
+
+            // --------- This field is not unique, so must be decoded directly --------- //
+            const last_update = new Date(statMessage.tracker.track['last_update'] * 1000)
             const month = last_update.getMonth() + 1
             const day = last_update.getDate()
-            const hours = lastdw_update.getHours()
+            const hours = last_update.getHours()
             const minutes = last_update.getMinutes()
             const seconds = last_update.getSeconds()
             this.last_update = `${month}:${day}: ${hours}:${minutes}:${seconds}`
-            */
             //this.azm = ((statMessage.tracker.ant['azm']).toFixed(2) + '°')
             //this.elv = ((statMessage.tracker.ant['elv']).toFixed(2) + '°')
+
+            // --------- This field is not unique, so must be decoded directly --------- //
+
             this.status = statMessage.tracker.ant['status']
             //this.req_azm = (statMessage.tracker.ant['req_azm'] + '°')
             //this.req_elv = (statMessage.tracker.ant['req_elv'] + '°')
@@ -258,38 +266,6 @@ export default {
             //this.mqtt_out = statMessage.receiver_1.last['msg_out_queue']
             //this.rssi_filtered = statMessage.receiver_1.last.rssi_last['rssi']
             //this.secs_ago = (statMessage.receiver_1.last.rssi_last['secs_ago']).toFixed(4)
-
-            const allKeys = Object.keys(statMessage.receiver_1.all)
-            const allValues = Object.keys(statMessage.receiver_1.all).map((k) => statMessage.receiver_1.all[k])
-
-            for (var i = 0; i < allKeys.length; i++) {
-                let last_update = new Date(allValues[i].last_update * 1000)
-                let month = last_update.getMonth() + 1
-                let day = last_update.getDate()
-                let hours = last_update.getHours()
-                let minutes = last_update.getMinutes()
-                let seconds = last_update.getSeconds()
-
-                if (this.radios[i] === undefined) {
-
-                    const radioReceived = {
-                        id: allKeys[i],
-                        ts: `${month}:${day}: ${hours}:${minutes}:${seconds}`
-                    }
-                    this.radios.push(radioReceived)
-                }
-                if (this.radios[i].id == allKeys[i]){
-
-                    this.radios[i].ts = `${month}:${day}: ${hours}:${minutes}:${seconds}`
-                }
-                if (!(this.radios[i].id == allKeys[i])) {
-                    const radioReceived = {
-                        id: allKeys[i],
-                        ts: `${month}:${day}: ${hours}:${minutes}:${seconds}`
-                    }
-                    this.radios.push(radioReceived)
-                }
-            }
 
             this.stationMessageDecode(statMessage)
 
@@ -322,6 +298,7 @@ export default {
                 if (i === 'id') {
                     this.id = flatPayload[i]
                 }
+                /*
                 if (i === 'last_update') {
                     const last_update = new Date(flatPayload[i] * 1000)
                     const month = last_update.getMonth() + 1
@@ -332,6 +309,7 @@ export default {
 
                     this.last_update = `${month}:${day}: ${hours}:${minutes}:${seconds}`
                 }
+                */
                 if (i === 'azm') {
                     this.azm = flatPayload[i]
                 }
@@ -382,13 +360,45 @@ export default {
                 }
             }
         },
+        balloonMessageDecode (payload) {
+            const flatPayload = this.flattenMessageTree(payload)
+
+            for (let i in flatPayload) {
+                if (i === 'gps_lat') {
+                    this.lat = ((flatPayload[i] / 10000000).toFixed(4) + '°')
+                }
+                if (i === 'gps_lon') {
+                    this.lon = ((flatPayload[i] / 10000000).toFixed(4) + '°')
+                }
+                if (i === 'gps_alt') {
+                    this.alt = ((flatPayload[i] / 1000).toFixed(2) + ' m')
+                }
+                if (i === 'gps_tow') {
+                    this.tow = (flatPayload[i] / 1000).toFixed(2)
+                }
+                if (i === 'gps_numsats') {
+                    this.ns = flatPayload[i]
+                }
+                if (i === 'RSSI_RX') {
+                    this.rssi = flatPayload[i]
+                }
+                if (i === 'gps_veln_C') {
+                    this.velx = (flatPayload[i]).toFixed(3) + ' m/s'
+                }
+                if (i === 'gps_vele_C') {
+                    this.vely = (flatPayload[i]).toFixed(3) + ' m/s'
+                }
+                if (i === 'gps_veld_C') {
+                    this.velz = (flatPayload[i]).toFixed(3) + ' m/s'
+                }
+            }
+        },
         flattenMessageTree(obj) {
             const flattened = {}
             Object.keys(obj).forEach((key) => {
                 if (typeof obj[key] === 'object' && obj[key] !== null) {
-                    console.log(obj, obj[key], key)
                     if (key === 'all') {
-                        console.log('nothing to see here')
+                        this.getHistoricalDevices(obj[key])
                     } else if ( key !== 'all') {
                         Object.assign(flattened, this.flattenMessageTree(obj[key]))
                     }
@@ -397,6 +407,39 @@ export default {
                 }
             })
             return flattened
+        },
+        getHistoricalDevices (data) {
+            const allKeys = Object.keys(data)
+            const allValues = Object.keys(data).map((k) => data[k])
+
+            for (var i = 0; i < allKeys.length; i++) {
+                let last_update = new Date(allValues[i].last_update * 1000)
+                let month = last_update.getMonth() + 1
+                let day = last_update.getDate()
+                let hours = last_update.getHours()
+                let minutes = last_update.getMinutes()
+                let seconds = last_update.getSeconds()
+
+                if (this.radios[i] === undefined) {
+
+                    const radioReceived = {
+                        id: allKeys[i],
+                        ts: `${month}:${day}: ${hours}:${minutes}:${seconds}`
+                    }
+                    this.radios.push(radioReceived)
+                }
+                if (this.radios[i].id == allKeys[i]){
+
+                    this.radios[i].ts = `${month}:${day}: ${hours}:${minutes}:${seconds}`
+                }
+                if (!(this.radios[i].id == allKeys[i])) {
+                    const radioReceived = {
+                        id: allKeys[i],
+                        ts: `${month}:${day}: ${hours}:${minutes}:${seconds}`
+                    }
+                    this.radios.push(radioReceived)
+                }
+            }
         }
     }
 }
